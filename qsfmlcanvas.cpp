@@ -4,6 +4,7 @@
 #include <X11/Xlib.h>
 #endif
 #include <iostream>
+#include <QResizeEvent>
 
 QSFMLCanvas::QSFMLCanvas(QWidget* Parent, const QPoint& Position, const QSize& Size, unsigned int FrameTime) : QWidget(Parent),
 myInitialized (false)
@@ -55,9 +56,7 @@ void QSFMLCanvas::paintEvent(QPaintEvent*)
 
 void QSFMLCanvas::resizeEvent(QResizeEvent *event)
 {
-  std::cerr << "wtf" << std::endl;
-//  setSize(sf::Vector2u(event->size().width(),event->size().height()));
-//  sf::RenderWindow::create((sf::WindowHandle) winId());
+  setSize(sf::Vector2u(event->size().width(),event->size().height()));
 }
 
 void QSFMLCanvas::OnInit() {}

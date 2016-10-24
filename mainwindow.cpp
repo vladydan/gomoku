@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->stackedWidget = this->findChild<QStackedWidget *>("stackedWidget");
     SFMLCanvas* SFMLView = new SFMLCanvas(this->findChild<QFrame *>("sfmlFrame"), QPoint(20, 20), QSize(360, 360));
     SFMLView->show();
+    this->findChild<QFrame *>("sfmlFrame")->layout()->addWidget(SFMLView);
 }
 
 MainWindow::~MainWindow()
