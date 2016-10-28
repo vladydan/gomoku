@@ -56,6 +56,156 @@ void	Game::printBoard() const
     }
 }
 
+std::list<freeThree>	Game::getfreeThreeList(int const& x, int const& y)
+{
+  int			i = 0;
+  unsigned long long	color = getValue(x, y, COLORMASK, 1);
+  std::list<freeThree>	list;
+
+  while (around[i].mask != 0)
+    {
+      if (checkCase(x + 3 * around[i].x, y + 3 * around[i].y) &&
+	  checkCase(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y) &&
+	  getValue(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, EMPTYMASK, 0) == 0 &&
+	  getValue(x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0 &&
+	  getValue(x + around[i].x, y + around[i].y, COLORMASK, 1) == color &&
+	  getValue(x + 2 * around[i].x, y + 2 * around[i].y, EMPTYMASK, 0) != 0 &&
+	  getValue(x + 2 * around[i].x, y + 2 * around[i].y, COLORMASK, 1) == color &&
+	  getValue(x + 3 * around[i].x, y + 3 * around[i].y, EMPTYMASK, 0) == 0)
+	{
+	  freeThree	var;
+	  var.cases[0] = {x, y};
+	  var.cases[1] = {x + around[i].x, y + around[i].y };
+	  var.cases[2] = {x + 2 * around[i].x, y + 2 * around[i].y };
+	  list.push_back(var);
+	}
+      else if (checkCase(x + 2 * around[i].x, y + 2 * around[i].y) &&
+	       checkCase(x + 2 * around[around[i].opp_off].x, y + 2 * around[around[i].opp_off].y) &&
+	       getValue(x + 2 * around[i].x, y + 2 * around[i].y, EMPTYMASK, 0) == 0 &&
+	       getValue(x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0 &&
+	       getValue(x + around[i].x, y + around[i].y, COLORMASK, 1) == color &&
+	       getValue(x + 2 * around[around[i].opp_off].x, y + 2 * around[around[i].opp_off].y, EMPTYMASK, 0) == 0 &&
+	       getValue(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, EMPTYMASK, 0) != 0 &&
+	       getValue(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, COLORMASK, 1) == color)
+	{
+	  freeThree	var;
+	  var.cases[0] = {x + around[i].x, y + around[i].y };
+	  var.cases[1] = {x, y };
+	  var.cases[2] = {x + around[around[i].opp_off].x, y + around[around[i].opp_off].y };
+	  list.push_back(var);
+	}
+      else if (checkCase(x + 2 * around[around[i].opp_off].x, y + 2 * around[around[i].opp_off].y) &&
+	       checkCase(x + 3 * around[i].x, y + 3 * around[i].y) &&
+	       getValue(x + 2 * around[around[i].opp_off].x, y + 2 * around[around[i].opp_off].y, EMPTYMASK, 0) == 0 &&
+	       getValue(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, EMPTYMASK, 0) != 0 &&
+	       getValue(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, COLORMASK, 1) == color &&
+	       getValue(x + around[i].x, y + around[i].y, EMPTYMASK, 0) == 0 &&
+	       getValue(x + 2 * around[i].x, y + 2 * around[i].y, EMPTYMASK, 0) != 0 &&
+	       getValue(x + 2 * around[i].x, y + 2 * around[i].y, COLORMASK, 1) == color &&
+	       getValue(x + 3 * around[i].x, y + 3 * around[i].y, EMPTYMASK, 0) == 0)
+	{
+	  freeThree	var;
+	  var.cases[0] = {x + around[around[i].opp_off].x, y + around[around[i].opp_off].y };
+	  var.cases[1] = {x, y };
+	  var.cases[2] = {x + 2 * around[i].x, y + 2 * around[i].y };
+	  list.push_back(var);
+	}
+      else if (checkCase(x + 4 * around[i].x, y + 4 * around[i].y) &&
+	       checkCase(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y) &&
+	       getValue(x + 4 * around[i].x, y + 4 * around[i].y, EMPTYMASK, 0) == 0 &&
+	       getValue(x + 3 * around[i].x, y + 3 * around[i].y, EMPTYMASK, 0) != 0 &&
+	       getValue(x + 3 * around[i].x, y + 3 * around[i].y, COLORMASK, 1) == color &&
+	       getValue(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, EMPTYMASK, 0) == 0)	       
+	{
+	  if (getValue(x + 2 * around[i].x, y + 2 * around[i].y, EMPTYMASK, 0) == 0 &&
+	      getValue(x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0 &&
+	      getValue(x + around[i].x, y + around[i].y, COLORMASK, 1) == color)
+	    {
+	      freeThree	var;
+	      var.cases[0] = {x, y };
+	      var.cases[1] = {x + around[i].x, y + around[i].y };
+	      var.cases[2] = {x + 3 * around[i].x, y + 3 * around[i].y };
+	      list.push_back(var);
+	    }
+	  else if (getValue(x + 2 * around[i].x, y + 2 * around[i].y, EMPTYMASK, 0) != 0 &&
+		   getValue(x + 2 * around[i].x, y + 2 * around[i].y, COLORMASK, 1) == color &&
+		   getValue(x + around[i].x, y + around[i].y, EMPTYMASK, 0) == 0)
+	    {
+	      freeThree	var;
+	      var.cases[0] = {x, y};
+	      var.cases[1] = {x + 2 * around[i].x, y + 2 * around[i].y};
+	      var.cases[2] = {x + 3 * around[i].x, y + 3 * around[i].y};
+	      list.push_back(var);
+	    }
+	}
+      ++i;
+    }
+  return (list);
+}
+
+bool	Game::checkdoubleInList(std::list<freeThree> & list)
+{
+  std::list<pos>	cases;
+
+  for (std::list<freeThree>::iterator it = list.begin() ; it != list.end() ; it++)
+    {
+      int	count = 0;
+      for (int i = 0 ; i < 3 ; i++)
+	{
+	  for (std::list<pos>::iterator itc = cases.begin() ; itc != cases.end() ; itc++)
+	    {
+	      if (it->cases[i].x == itc->x && it->cases[i].y == itc->y)
+		count += 1;
+	    }
+	}
+      if (count == 1)
+	return (true);
+      for (int i = 0 ; i < 3 ; i++)
+	{
+	  bool	to_push = true;
+	  for (std::list<pos>::iterator itc = cases.begin() ; itc != cases.end() ; itc++)
+	    {
+	      if (it->cases[i].x == itc->x && it->cases[i].y == itc->y)
+		to_push = false;
+	    }
+	  if (to_push)
+	    cases.push_back(it->cases[i]);
+	}
+    }
+  return (false);
+}
+
+bool	Game::checkdoubleThree(int const& x, int const& y, unsigned long long const& color)
+{
+  std::list<freeThree>	list;
+
+  changeValue(x, y, COLORMASK, 1, color);
+  changeValue(x, y, EMPTYMASK, 0, 1);
+  list = getfreeThreeList(x, y);
+  if (!checkdoubleInList(list))
+    {
+      for (std::list<freeThree>::iterator it = list.begin() ; it != list.end() ; it++)
+	{
+	  for (int i = 0 ; i < 3 ; i++)
+	    {
+	      if (it->cases[i].x != x || it->cases[i].y != y)
+		{
+		  std::list<freeThree>	l = getfreeThreeList(it->cases[i].x, it->cases[i].y);
+		  if (checkdoubleInList(l))
+		    {
+		      changeValue(x, y, COLORMASK, 1, 0);
+		      changeValue(x, y, EMPTYMASK, 0, 0);
+		      return (true);
+		    }
+		}
+	    }
+	}
+    }
+  changeValue(x, y, COLORMASK, 1, 0);
+  changeValue(x, y, EMPTYMASK, 0, 0);
+  return (false);
+}
+
 bool	Game::checkBreakableFive(int const& x, int const& y)
 {
   int	i = 0;
@@ -241,7 +391,7 @@ void	Game::changeFiveRow(int const& x, int const& y)
   changeValue(x, y, FIVEROW, FIVEROWDEC, 0);
 }
 
-void	Game::changeAlignsAround(int const& x, int const& y, int const& color, int const& opp_x, int const& opp_y, aroundCases const& direction)
+void	Game::changeAlignsAround(int const& x, int const& y, unsigned long long const& color, int const& opp_x, int const& opp_y, aroundCases const& direction)
 {
   if (x < 0 || x >= X_SIZE || y < 0 || y >= Y_SIZE)
     return;
@@ -306,7 +456,7 @@ void	Game::play()
       color = _players[_turn % 2]->getColor();
       std::cin >> x;
       std::cin >> y;
-      if ((_board[y][x] & EMPTYMASK) == 0) // + check double trois free
+      if ((_board[y][x] & EMPTYMASK) == 0 && (!_doubleThreeFree || !checkdoubleThree(x, y, color)))
 	{
 	  changeValue(x, y, COLORMASK, 1, color);
 	  changeValue(x, y, EMPTYMASK, 0, 1);
@@ -324,6 +474,7 @@ void	Game::play()
 	}
     }
   printBoard();
-  _winner = _players[_turn % 2];
+  if (_winner == NULL)
+    _winner = _players[_turn % 2];
   std::cout << "Player : " << _winner->getName() << " wins!" << std::endl;
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <list>
 #include "Player.hpp"
 
 #define X_SIZE 19
@@ -27,7 +28,8 @@
 #define BREAKABLE_OFF	2190433320960 // 1 11111110 00000000 00000000 00000000 00000000
 
 #define FIVEANDBREAK	12 // 1100
-
+#define BLACKCASE	1
+#define WHITECASE	3
 
 //decal masks
 #define FIVEROWDEC	2
@@ -67,6 +69,17 @@ typedef struct aroundCases
   int	opp_off;
 }	aroundCases;
 
+typedef struct pos
+{
+  int	x;
+  int	y;
+}	pos;
+
+typedef struct freeThree
+{
+  pos	cases[3];
+}	freeThree;
+
 class Game
 {
   unsigned long long _board[Y_SIZE][X_SIZE];
@@ -81,7 +94,7 @@ class Game
   void		changeValue(int const&, int const&, unsigned long long const&, int const&, unsigned long long const&);
   void		changeAround(int const&, int const&, int const&);
   void		changeAligns(int const&, int const&);
-  void		changeAlignsAround(int const&, int const&, int const&, int const&, int const&, aroundCases const&);
+  void		changeAlignsAround(int const&, int const&, unsigned long long const&, int const&, int const&, aroundCases const&);
   void		changeFiveRow(int const&, int const&);
   void		checkBreakable(int const&, int const&);
   bool		checkCase(int const&, int const&);
@@ -90,6 +103,9 @@ class Game
   void		deleteCase(int const&, int const&);
   bool		checkBreakableFive(int const&, int const&);
   void		checkEnd();
+  bool		checkdoubleThree(int const&, int const&, unsigned long long const&);
+  std::list<freeThree>	getfreeThreeList(int const&, int const&);
+  bool		checkdoubleInList(std::list<freeThree>&);
 public:
   explicit Game(Player*, Player*, bool, bool);
   virtual ~Game() {}
