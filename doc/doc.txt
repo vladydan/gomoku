@@ -1,0 +1,5 @@
+Bits de base:
+- VIDE/PLEIN
+- COULEUR (NOIR/BLANC)
+- CASSABLE
+- 
