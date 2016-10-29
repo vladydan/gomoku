@@ -1,4 +1,5 @@
-#include "qsfmlcanvas.h"
+#include "ASFMLCanvas.hpp"
+#include "Game.hpp"
 
 class SFMLCanvas : public QSFMLCanvas
 {
@@ -10,12 +11,17 @@ public :
 
     }
 
+    void setGame(Game *game)
+    {
+      currentGame = game;
+    }
+
 private :
 
     void OnInit()
     {
         // Load the image
-        myImage.loadFromFile("/home/danilo_d/Epitech-Projects/Semestre5/gomoku/gomoku.jpg");
+        myImage.loadFromFile("ressources/gomoku.jpg");
 
         // Setup the sprite
         mySprite.setTexture(myImage);
@@ -36,5 +42,5 @@ private :
     sf::Texture  myImage;
     sf::Sprite mySprite;
     sf::Clock myClock;
-
+    Game      *currentGame;
 };

@@ -1,11 +1,10 @@
-#include "mainwindow.h"
+#include "GomokuWindow.hpp"
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
+    GomokuWindow w;
     w.show();
-
     return a.exec();
 }

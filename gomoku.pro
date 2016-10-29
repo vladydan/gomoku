@@ -4,21 +4,30 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT       += core gui widgets
 
 TARGET = gomoku
 TEMPLATE = app
 
 LIBS += -lsfml-audio -lsfml-graphics -lsfml-network -lsfml-window -lsfml-system
 
-SOURCES += main.cpp\
-        mainwindow.cpp \
-    qsfmlcanvas.cpp
+QMAKE_CXXFLAGS += -std=c++11
 
-HEADERS  += mainwindow.h \
-    qsfmlcanvas.h \
-    SFMLCanvas.hpp
+INCLUDEPATH += includes
 
-FORMS    += mainwindow.ui
+FORMS    += \
+    GomokuWindow.ui
+
+SOURCES += \
+    src/Game.cpp \
+    src/main.cpp \
+    src/Player.cpp \
+    src/GomokuWindow.cpp \
+    src/ASFMLCanvas.cpp
+
+HEADERS += \
+    includes/Game.hpp \
+    includes/Player.hpp \
+    includes/SFMLCanvas.hpp \
+    includes/ASFMLCanvas.hpp \
+    includes/GomokuWindow.hpp \
