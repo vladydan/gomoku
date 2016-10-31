@@ -23,11 +23,12 @@ SOURCES += \
     src/main.cpp \
     src/Player.cpp \
     src/GomokuWindow.cpp \
-    src/ASFMLCanvas.cpp
+    src/ASFMLCanvas.cpp \
+    src/sfmlcanvas.cpp
 
 HEADERS += \
     includes/Game.hpp \
     includes/Player.hpp \
-    includes/SFMLCanvas.hpp \
     includes/ASFMLCanvas.hpp \
     includes/GomokuWindow.hpp \
+    includes/SFMLCanvas.hh

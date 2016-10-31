@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "SFMLCanvas.hpp"
+#include "SFMLCanvas.hh"
 #include "Game.hpp"
 #include <QMainWindow>
 #include <QStackedWidget>

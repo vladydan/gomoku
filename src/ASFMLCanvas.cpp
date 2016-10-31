@@ -28,15 +28,18 @@ void QSFMLCanvas::showEvent(QShowEvent*)
     #endif
     sf::RenderWindow::create((sf::WindowHandle) winId());
     OnInit();
+    //OnInit();
     connect(&myTimer, SIGNAL(timeout()), this, SLOT(repaint()));
     myTimer.start();
     myInitialized = true;
   }
 }
+
 QPaintEngine* QSFMLCanvas::paintEngine() const
 {
   return 0;
 }
+
 void QSFMLCanvas::paintEvent(QPaintEvent*)
 {
   OnUpdate();
