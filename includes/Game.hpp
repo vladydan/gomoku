@@ -111,5 +111,5 @@ public:
   virtual ~Game() {}
 
   void	printBoard() const;
-  void	play();
+  std::string	play(unsigned int x, unsigned int y);
 };

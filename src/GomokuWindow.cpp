@@ -35,6 +35,7 @@ void GomokuWindow::on_pvpButton_clicked()
     currentGame = new Game(playerOne, playerTwo, true, true);
     this->findChild<QMenuBar *>("menuBar")->show();
     this->stackedWidget->setCurrentIndex(2);
+    this->sfmlCanvas->setGame(currentGame);
 }
 
 void GomokuWindow::on_actionExit_triggered()

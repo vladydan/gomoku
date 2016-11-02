@@ -148,6 +148,7 @@ void    SFMLCanvas::setWinner(const std::string &color)
 void    SFMLCanvas::trySetPiece(unsigned int x, unsigned int y)
 {
     std::string     piece;
+    piece = currentGame->play(x,y);
     // piece = Appel methode arbitre pour savoir si on peu poser le pion (retourne black, white ou invalid
     if (piece.compare("black") == 0)
         this->pieces[x][y] = 'b';

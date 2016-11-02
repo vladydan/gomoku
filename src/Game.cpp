@@ -444,18 +444,14 @@ void	Game::changeAround(int const& x, int const& y, int const& sign)
     }
 }
 
-void	Game::play()
+std::string	Game::play(unsigned int x, unsigned int y)
 {
-  int	x;
-  int	y;
   int	color;
 
-  while (_playing)
-    {
-      printBoard();
+//  while (_playing)
+//    {
+//      printBoard();
       color = _players[_turn % 2]->getColor();
-      std::cin >> x;
-      std::cin >> y;
       if ((_board[y][x] & EMPTYMASK) == 0 && (!_doubleThreeFree || !checkdoubleThree(x, y, color)))
 	{
 	  changeValue(x, y, COLORMASK, 1, color);
@@ -467,14 +463,22 @@ void	Game::play()
 	  checkEnd();
 	  if (_playing)
 	    _turn++;
+     else
+    {
+      if (_winner == NULL)
+        _winner = _players[_turn % 2];
+      std::string winner = (_winner->getColor() == BLACK ? "black" : "white");
+      //sfml->setwinner(winner);
+    }
 	}
       else
-	{
-	  std::cout << "Can't play here" << std::endl;
+  {
+//	  std::cout << "Can't play here" << std::endl;
+     return ("null");
 	}
-    }
-  printBoard();
-  if (_winner == NULL)
-    _winner = _players[_turn % 2];
-  std::cout << "Player : " << _winner->getName() << " wins!" << std::endl;
+  return (color == 0 ? "black" : "white");
+//  printBoard();
+  //if (_winner == NULL)
+    //_winner = _players[_turn % 2];
+  //std::cout << "Player : " << _winner->getName() << " wins!" << std::endl;
 }
