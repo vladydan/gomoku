@@ -25,11 +25,11 @@ private slots:
 
     void on_actionExit_triggered();
 
-    void on_settingsButton_clicked();
-
-    void on_backToMenuButton_clicked();
-
     void on_actionBack_to_the_menu_triggered();
+
+    void on_startButton_clicked();
+
+    void on_backtoMenu_clicked();
 
 private:
     Ui::GomokuWindow *ui;
