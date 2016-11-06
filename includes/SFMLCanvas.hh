@@ -28,9 +28,11 @@ private :
     void    trySetPiece(unsigned int x, unsigned int y);
     sf::Vector2i    screenToGamePos(sf::Vector2f &pos);
 
-    int        pieces[19][19];
+    int         pieces[19][19];
     char        winner;
     char        currentPlayer;
+
+    sf::Vector2f    coefAff;
 
     sf::Texture backgroundTexture;
     sf::Texture blackWinTexture;

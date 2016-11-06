@@ -8,7 +8,8 @@ void SFMLCanvas::setGame(Game *game)
 
 void SFMLCanvas::OnInit()
 {
-    this->winner = -1;for (int i = 0; i < 19; i++)
+    this->winner = -1;
+    for (int i = 0; i < 19; i++)
     {
         for (int e = 0; e < 19; e++)
         {
@@ -43,7 +44,10 @@ void SFMLCanvas::OnInit()
     this->whitePlayer.setPosition(170,0);
     this->whiteWin.setPosition(120, 150);
     this->blackWin.setPosition(120, 150);
-
+    this->pieces[0][0] ='b';
+    this->pieces[0][18] ='b';
+    this->pieces[18][0] ='b';
+    this->pieces[18][18] ='b';
 }
 
 void SFMLCanvas::OnUpdate()
@@ -65,7 +69,7 @@ void    SFMLCanvas::handleEvent()
 
         if (pionPos.x >= 0 && pionPos.x < 19 && pionPos.y >= 0 && pionPos.y < 19)
             this->trySetPiece(pionPos.x, pionPos.y);
-
+        std::cout << screenPos.x << " - " << screenPos.y << std::endl;
         wasPressed = true;
     }
     if (!sf::Mouse::isButtonPressed(sf::Mouse::Left) && wasPressed)
@@ -103,7 +107,15 @@ void    SFMLCanvas::drawState()
 
 void    SFMLCanvas::drawPiece(unsigned int x, unsigned int y, sf::Sprite & piece)
 {
-    piece.setPosition(x*18.3+70,y*18.5+70);
+    sf::Vector2f   win_size;
+    sf::Vector2f   coef;
+
+    win_size = RenderWindow::getView().getSize();
+    coef.x = win_size.x / 600.f;
+    coef.y = win_size.y / 600.f;
+
+    piece.setPosition(x*((win_size.x - (82.f*(coef.x)) * 2)/19.f )+ 84.f*(coef.x),
+                      y*((win_size.y - (82.f*(coef.y)) * 2)/19.f )+ 84.f*(coef.y));
     RenderWindow::draw(piece);
 }
 
@@ -114,10 +126,16 @@ void    SFMLCanvas::setPiece(unsigned int x, unsigned int y, char color)
 
 sf::Vector2i    SFMLCanvas::screenToGamePos(sf::Vector2f &pos)
 {
-    sf::Vector2i    gamePos;
+    sf::Vector2i   gamePos;
+    sf::Vector2f   win_size;
+    sf::Vector2f   coef;
 
-    gamePos.x  = round((pos.x - 70) / 18.3);
-    gamePos.y  = round((pos.y - 70) / 18.5);
+    win_size = RenderWindow::getView().getSize();
+    coef.x = win_size.x / 600.f;
+    coef.y = win_size.y / 600.f;
+
+    gamePos.x  = nearbyint((pos.x - 84.f*coef.x) / ((win_size.x - (82.f*(coef.x)) * 2)/19.f ));
+    gamePos.y  = nearbyint((pos.y - 84.f*coef.y) / ((win_size.y - (82.f*(coef.y)) * 2)/19.f ));
     return (gamePos);
 }
 
