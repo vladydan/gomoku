@@ -1,5 +1,6 @@
 #include "SFMLCanvas.hh"
 #include "Game.hpp"
+#include <QLabel>
 
 void SFMLCanvas::setGame(Game *game)
 {
@@ -15,24 +16,6 @@ void SFMLCanvas::OnInit()
         {
            pieces[i][e] = 0;
         }
-    }
-    if (this->font.loadFromFile("ressources/Open.ttf"))
-    {
-        this->currentTurn.setFont(this->font);
-        this->whiteBreak.setFont(this->font);
-        this->blackBreak.setFont(this->font);
-        this->currentTurn.setString("Turn : 0");
-        this->whiteBreak.setString("White : 0");
-        this->blackBreak.setString("Black : 0");
-        this->currentTurn.setColor(sf::Color::White);
-        this->whiteBreak.setColor(sf::Color::White);
-        this->blackBreak.setColor(sf::Color::White);
-        this->currentTurn.setPosition(0,100);
-        this->whiteBreak.setPosition(0, 125);
-        this->blackBreak.setPosition(0,150);
-        this->currentTurn.setCharacterSize(18);
-        this->whiteBreak.setCharacterSize(18);
-        this->blackBreak.setCharacterSize(18);
     }
     this->currentPlayer = 'b';
     this->backgroundTexture.loadFromFile("ressources/back.jpg");
@@ -122,9 +105,9 @@ void    SFMLCanvas::drawState()
             }
         }
     }
-    RenderWindow::draw(this->currentTurn);
-    RenderWindow::draw(this->whiteBreak);
-    RenderWindow::draw(this->blackBreak);
+//    RenderWindow::draw(this->currentTurn);
+//    RenderWindow::draw(this->whiteBreak);
+//    RenderWindow::draw(this->blackBreak);
     if (winner != -1)
         drawWinner(winner);
 }
@@ -210,9 +193,16 @@ void    SFMLCanvas::setCurrentPlayer(const std::string &color)
 
  void    SFMLCanvas::updateStat(const std::string &turn, const std::string &black, const std::string &white)
 {
-    this->currentTurn.setString(turn);
-    this->blackBreak.setString(black);
-     this->whiteBreak.setString(white);
+   std::cout << "?" << std::endl;
+   QLabel *label = this->findChild<QLabel *>("turn");
+   if (label != nullptr)
+    {
+     std::cout << "nice " << std::endl;
+     label->setText("pepe");
+   }
+//    this->currentTurn.setString(turn);
+//    this->blackBreak.setString(black);
+//     this->whiteBreak.setString(white);
 }
 
 void    SFMLCanvas::removePiece(unsigned int x, unsigned int y)

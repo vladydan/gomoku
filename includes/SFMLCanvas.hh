@@ -52,10 +52,6 @@ private :
     sf::Sprite  blackWin;
     sf::Sprite  whitePlayer;
     sf::Sprite  blackPlayer;
-    sf::Font    font;
-    sf::Text    currentTurn;
-    sf::Text    blackBreak;
-    sf::Text    whiteBreak;
 
     sf::Clock   myClock;
     Game      *currentGame;
