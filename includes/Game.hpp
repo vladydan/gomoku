@@ -80,6 +80,8 @@ typedef struct freeThree
   pos	cases[3];
 }	freeThree;
 
+class SFMLCanvas;
+
 class Game
 {
   unsigned long long _board[Y_SIZE][X_SIZE];
@@ -89,6 +91,7 @@ class Game
   bool		_breakableFive;
   bool		_doubleThreeFree;
   Player	*_winner;
+  SFMLCanvas    *_sfml;
 
   unsigned long	long	getValue(int const& ,int const& ,unsigned long long  const&, int const&) const;
   void		changeValue(int const&, int const&, unsigned long long const&, int const&, unsigned long long const&);
@@ -107,7 +110,7 @@ class Game
   std::list<freeThree>	getfreeThreeList(int const&, int const&);
   bool		checkdoubleInList(std::list<freeThree>&);
 public:
-  explicit Game(Player*, Player*, bool, bool);
+  explicit Game(Player*, Player*, bool, bool, SFMLCanvas *sfml);
   virtual ~Game() {}
 
   void	printBoard() const;

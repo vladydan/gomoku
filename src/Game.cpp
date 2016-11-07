@@ -1,5 +1,6 @@
 #include <cstring>
 #include "Game.hpp"
+#include "SFMLCanvas.hh"
 
 aroundCases	around[] =
   { {UP, UPDEC, 0, -1, DOWN, DOWNDEC, UP_OFF, DOWN_OFF},
@@ -13,7 +14,7 @@ aroundCases	around[] =
     {0, 0, 0, 0, 0, 0, 0, 0}
   };
 
-Game::Game(Player *one, Player *two, bool bF, bool dTF)
+Game::Game(Player *one, Player *two, bool bF, bool dTF, SFMLCanvas *sfml)
 {
   memset(_board, 0, sizeof(_board));
   _playing = true;
@@ -23,6 +24,7 @@ Game::Game(Player *one, Player *two, bool bF, bool dTF)
   _breakableFive = bF;
   _doubleThreeFree = dTF;
   _winner = NULL;
+  _sfml = sfml;
 }
 
 unsigned long long	Game::getValue(int const& x, int const& y, unsigned long long const& mask, int const& decal) const
@@ -462,13 +464,16 @@ std::string	Game::play(unsigned int x, unsigned int y)
 	  changeBreakable(x, y);
 	  checkEnd();
 	  if (_playing)
-	    _turn++;
+      {
+            _turn++;
+            _sfml->updateStat("Turn : " + std::to_string(_turn), "Black : " + std::to_string(_players[0]->getBroke()), "White : "+ std::to_string(_players[1]->getBroke()));
+      }
      else
     {
       if (_winner == NULL)
         _winner = _players[_turn % 2];
       std::string winner = (_winner->getColor() == BLACK ? "black" : "white");
-      //sfml->setwinner(winner);
+      _sfml->setWinner(winner);
     }
 	}
       else

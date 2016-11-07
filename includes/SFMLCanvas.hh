@@ -1,6 +1,7 @@
 #include "ASFMLCanvas.hpp"
-#include "Game.hpp"
 #include <iostream>
+
+class Game;
 
 class SFMLCanvas : public QSFMLCanvas
 {
@@ -15,6 +16,7 @@ public :
     void    removePiece(unsigned int x, unsigned int y);
     void    setWinner(const std::string &color);
     void    setCurrentPlayer(const std::string &color);
+    void    updateStat(const std::string &turn, const std::string &black, const std::string &white);
 
 private :
 
@@ -50,7 +52,11 @@ private :
     sf::Sprite  blackWin;
     sf::Sprite  whitePlayer;
     sf::Sprite  blackPlayer;
+    sf::Font    font;
+    sf::Text    currentTurn;
+    sf::Text    blackBreak;
+    sf::Text    whiteBreak;
 
-    sf::Clock myClock;
+    sf::Clock   myClock;
     Game      *currentGame;
 };

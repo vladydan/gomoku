@@ -1,5 +1,5 @@
 #include "SFMLCanvas.hh"
-
+#include "Game.hpp"
 
 void SFMLCanvas::setGame(Game *game)
 {
@@ -16,7 +16,25 @@ void SFMLCanvas::OnInit()
            pieces[i][e] = 0;
         }
     }
-    this->currentPlayer = 'w';
+    if (this->font.loadFromFile("ressources/Open.ttf"))
+    {
+        this->currentTurn.setFont(this->font);
+        this->whiteBreak.setFont(this->font);
+        this->blackBreak.setFont(this->font);
+        this->currentTurn.setString("Turn : 0");
+        this->whiteBreak.setString("White : 0");
+        this->blackBreak.setString("Black : 0");
+        this->currentTurn.setColor(sf::Color::White);
+        this->whiteBreak.setColor(sf::Color::White);
+        this->blackBreak.setColor(sf::Color::White);
+        this->currentTurn.setPosition(0,100);
+        this->whiteBreak.setPosition(0, 125);
+        this->blackBreak.setPosition(0,150);
+        this->currentTurn.setCharacterSize(18);
+        this->whiteBreak.setCharacterSize(18);
+        this->blackBreak.setCharacterSize(18);
+    }
+    this->currentPlayer = 'b';
     this->backgroundTexture.loadFromFile("ressources/back.jpg");
     this->whitePieceTexture.loadFromFile("ressources/white.png");
     this->blackPieceTexture.loadFromFile("ressources/black.png");
@@ -44,10 +62,13 @@ void SFMLCanvas::OnInit()
     this->whitePlayer.setPosition(170,0);
     this->whiteWin.setPosition(120, 150);
     this->blackWin.setPosition(120, 150);
+
+    /*
     this->pieces[0][0] ='b';
     this->pieces[0][18] ='b';
     this->pieces[18][0] ='b';
     this->pieces[18][18] ='b';
+    */
 }
 
 void SFMLCanvas::OnUpdate()
@@ -101,6 +122,9 @@ void    SFMLCanvas::drawState()
             }
         }
     }
+    RenderWindow::draw(this->currentTurn);
+    RenderWindow::draw(this->whiteBreak);
+    RenderWindow::draw(this->blackBreak);
     if (winner != -1)
         drawWinner(winner);
 }
@@ -182,5 +206,12 @@ void    SFMLCanvas::setCurrentPlayer(const std::string &color)
         this->currentPlayer = 'b';
     else if (color.compare("white") == 0)
         this->currentPlayer = 'w';
+}
+
+ void    SFMLCanvas::updateStat(const std::string &turn, const std::string &black, const std::string &white)
+{
+    this->currentTurn.setString(turn);
+    this->blackBreak.setString(black);
+     this->whiteBreak.setString(white);
 }
 

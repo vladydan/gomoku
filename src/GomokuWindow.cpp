@@ -55,7 +55,7 @@ void GomokuWindow::on_startButton_clicked()
 {
   playerOne = new Player(BLACK, this->findChild<QLineEdit *>("playerOneNameLineEdit")->text().toLocal8Bit().constData(), Player::PLAYER);
   playerTwo = new Player(WHITE,  this->findChild<QLineEdit *>("playerTwoNameLineEdit")->text().toLocal8Bit().constData(), Player::PLAYER);
-  currentGame = new Game(playerOne, playerTwo, this->findChild<QCheckBox *>("leDoubleTroisCheckBox")->isChecked(), this->findChild<QCheckBox *>("cinqCassableCheckBox")->isChecked());
+  currentGame = new Game(playerOne, playerTwo, this->findChild<QCheckBox *>("leDoubleTroisCheckBox")->isChecked(), this->findChild<QCheckBox *>("cinqCassableCheckBox")->isChecked(), this->sfmlCanvas);
   this->findChild<QMenuBar *>("menuBar")->show();
   this->stackedWidget->setCurrentIndex(2);
   this->sfmlCanvas->setGame(currentGame);
