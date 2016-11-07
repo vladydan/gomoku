@@ -215,3 +215,7 @@ void    SFMLCanvas::setCurrentPlayer(const std::string &color)
      this->whiteBreak.setString(white);
 }
 
+void    SFMLCanvas::removePiece(unsigned int x, unsigned int y)
+{
+    this->pieces[x][y] = -1;
+}
