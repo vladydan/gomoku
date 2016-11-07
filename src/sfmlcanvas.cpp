@@ -43,6 +43,7 @@ void SFMLCanvas::OnInit()
     this->invalidPieceTexture.loadFromFile("ressources/invalid.png");
     this->whitePlayerTexture.loadFromFile("ressources/whiteTurn.png");
     this->blackPlayerTexture.loadFromFile("ressources/blackTurn.png");
+    this->pieceText.loadFromFile("ressources/black_transp.png");
 
     this->background.setTexture(this->backgroundTexture);
     this->background.scale(RenderWindow::getView().getSize() / 600.f);
@@ -53,7 +54,8 @@ void SFMLCanvas::OnInit()
     this->blackPiece.setScale(RenderWindow::getView().getSize() / 1800.f);
     this->invalidPiece.setTexture(this->invalidPieceTexture);
     this->invalidPiece.setScale(RenderWindow::getView().getSize() / 1800.f);
-
+    this->piece.setTexture(this->pieceText);
+    this->piece.setScale(RenderWindow::getView().getSize() / 1800.f);
     this->whiteWin.setTexture(this->whiteWinTexture);
     this->blackWin.setTexture(this->blackWinTexture);
     this->whitePlayer.setTexture(this->whitePlayerTexture);
@@ -122,6 +124,7 @@ void    SFMLCanvas::drawState()
             }
         }
     }
+    this->drawTips();
     RenderWindow::draw(this->currentTurn);
     RenderWindow::draw(this->whiteBreak);
     RenderWindow::draw(this->blackBreak);
@@ -221,4 +224,14 @@ void    SFMLCanvas::setCurrentPlayer(const std::string &color)
 void    SFMLCanvas::removePiece(unsigned int x, unsigned int y)
 {
     this->pieces[x][y] = -1;
+}
+
+void    SFMLCanvas::drawTips()
+{
+    sf::Vector2i mousePos = sf::Mouse::getPosition(*this);
+    sf::Vector2f screenPos = RenderWindow::mapPixelToCoords(mousePos);
+    sf::Vector2i pionPos = screenToGamePos(screenPos);
+
+    if (pionPos.x >= 0 && pionPos.x < 19 && pionPos.y >= 0 && pionPos.y < 19)
+        this->drawPiece(pionPos.x, pionPos.y, this->piece);
 }
