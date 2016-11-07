@@ -109,6 +109,7 @@ class Game
   bool		checkdoubleThree(int const&, int const&, unsigned long long const&);
   std::list<freeThree>	getfreeThreeList(int const&, int const&);
   bool		checkdoubleInList(std::list<freeThree>&);
+  void		printBoard();
 public:
   explicit Game(Player*, Player*, bool, bool, SFMLCanvas *sfml);
   virtual ~Game() {}
