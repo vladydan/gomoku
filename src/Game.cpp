@@ -282,6 +282,7 @@ void	Game::deleteCase(int const& x, int const& y)
 
   changeAround(x, y, -1);
   _board[y][x] = 0;
+  _sfml->removePiece(x, y);
   changeValue(x, y, AROUND, AROUNDDEC, ar);
   while (around[i].mask != 0)
     {
