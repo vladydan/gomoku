@@ -39,7 +39,7 @@ void	Game::changeValue(int const& x, int const& y, unsigned long long const& mas
   if (x >= 0 && x < X_SIZE && y >= 0 && y < Y_SIZE)
     {
       _board[y][x] &= ~mask;
-      _board[y][x] |= (value << decal);
+      _board[y][x] |= (unsigned long long)(value << decal);
     }
 }
 
@@ -339,8 +339,9 @@ void	Game::checkBreakable(int const& x, int const& y)
 	    {
 	      changeValue(x, y, BREAKABLE, BREAKABLEDEC, 1);
 	      changeValue(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, BREAKABLE, BREAKABLEDEC, 1);
-	      changeValue(x, y, (1 << (BREAKABLEOFFDEC + i)), BREAKABLEOFFDEC + i, 1);
-	      changeValue(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, (1 << (BREAKABLEOFFDEC + i)), BREAKABLEOFFDEC  + i, 1);
+	      changeValue(x, y, ((unsigned long long)1 << (BREAKABLEOFFDEC + i)), BREAKABLEOFFDEC + i, 1);
+	      changeValue(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, ((unsigned long long)1 << (BREAKABLEOFFDEC + i)), BREAKABLEOFFDEC  + i, 1);
+	      std::cout << getValue(x, y, BREAKABLEOFFDEC + i, BREAKABLEOFFDEC) << std::endl;
 	      breakable = true;
 	    }
 	  else if (getValue(x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0 &&
@@ -351,8 +352,8 @@ void	Game::checkBreakable(int const& x, int const& y)
 	    {
 	      changeValue(x, y, BREAKABLE, BREAKABLEDEC, 1);
 	      changeValue(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, BREAKABLE, BREAKABLEDEC, 1);
-	      changeValue(x, y, (1 << (BREAKABLEOFFDEC + around[i].opp_off)), BREAKABLEOFFDEC + around[i].opp_off, 1);
-	      changeValue(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, (1 << (BREAKABLEOFFDEC + around[i].opp_off)), BREAKABLEOFFDEC + around[i].opp_off, 1);
+	      changeValue(x, y, ((unsigned long long)1 << (BREAKABLEOFFDEC + around[i].opp_off)), BREAKABLEOFFDEC + around[i].opp_off, 1);
+	      changeValue(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, ((unsigned long long)1 << (BREAKABLEOFFDEC + around[i].opp_off)), BREAKABLEOFFDEC + around[i].opp_off, 1);
 	      breakable = true;
 	    }
 	}
@@ -447,6 +448,21 @@ void	Game::changeAround(int const& x, int const& y, int const& sign)
     }
 }
 
+void		Game::printBoard()
+{
+  for (int y = 0 ; y < Y_SIZE ; y++)
+    {
+      for (int x = 0 ; x < X_SIZE ; x++)
+	{
+	  if (getValue(x, y, EMPTYMASK, 0) != 0)
+	    std::cout << getValue(x, y, COLORMASK, 1) + 1;
+	  else
+	    std::cout << "0";
+	}
+      std::cout << std::endl;
+    }
+}
+
 std::string	Game::play(unsigned int x, unsigned int y)
 {
   int	color;
@@ -457,6 +473,7 @@ std::string	Game::play(unsigned int x, unsigned int y)
       color = _players[_turn % 2]->getColor();
       if ((_board[y][x] & EMPTYMASK) == 0 && (!_doubleThreeFree || !checkdoubleThree(x, y, color)))
 	{
+	  std::cout << "x : " << x << " y : " << y << std::endl;
 	  changeValue(x, y, COLORMASK, 1, color);
 	  changeValue(x, y, EMPTYMASK, 0, 1);
 	  changeAround(x, y, 1);
@@ -464,23 +481,24 @@ std::string	Game::play(unsigned int x, unsigned int y)
 	  affectBreakable(x, y, _players[_turn % 2]);
 	  changeBreakable(x, y);
 	  checkEnd();
+	  //	  printBoard();
 	  if (_playing)
-      {
-            _turn++;
-            _sfml->updateStat("Turn : " + std::to_string(_turn), "Black : " + std::to_string(_players[0]->getBroke()), "White : "+ std::to_string(_players[1]->getBroke()));
-      }
-     else
-    {
-      if (_winner == NULL)
-        _winner = _players[_turn % 2];
-      std::string winner = (_winner->getColor() == BLACK ? "black" : "white");
-      _sfml->setWinner(winner);
-    }
+	    {
+	      _turn++;
+	      _sfml->updateStat("Turn : " + std::to_string(_turn), "Black : " + std::to_string(_players[0]->getBroke()), "White : "+ std::to_string(_players[1]->getBroke()));
+	    }
+	  else
+	    {
+	      if (_winner == NULL)
+		_winner = _players[_turn % 2];
+	      std::string winner = (_winner->getColor() == BLACK ? "black" : "white");
+	      _sfml->setWinner(winner);
+	    }
 	}
       else
-  {
-//	  std::cout << "Can't play here" << std::endl;
-     return ("null");
+	{
+	  //	  std::cout << "Can't play here" << std::endl;
+	  return ("null");
 	}
   return (color == 0 ? "black" : "white");
 //  printBoard();

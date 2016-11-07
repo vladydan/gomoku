@@ -31,6 +31,8 @@ private slots:
 
     void on_backtoMenu_clicked();
 
+    void on_actionReplay_triggered();
+
 private:
     Ui::GomokuWindow *ui;
     SFMLCanvas *sfmlCanvas;

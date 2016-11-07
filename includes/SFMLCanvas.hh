@@ -8,7 +8,9 @@ class SFMLCanvas : public QSFMLCanvas
 public :
 
     SFMLCanvas(QWidget* Parent, const QPoint& Position, const QSize& Size) :
-    QSFMLCanvas(Parent, Position, Size){};
+    QSFMLCanvas(Parent, Position, Size){
+      this->qt = Parent;
+    };
 
     void setGame(Game *game);
 
@@ -29,7 +31,7 @@ private :
     void    drawWinner(char winner);
     void    trySetPiece(unsigned int x, unsigned int y);
     sf::Vector2i    screenToGamePos(sf::Vector2f &pos);
-
+    void        drawTips();
     int         pieces[19][19];
     char        winner;
     char        currentPlayer;
@@ -44,6 +46,8 @@ private :
     sf::Texture blackPieceTexture;
     sf::Texture whitePlayerTexture;
     sf::Texture blackPlayerTexture;
+    sf::Texture pieceText;
+    sf::Sprite  piece;
     sf::Sprite  background;
     sf::Sprite  whitePiece;
     sf::Sprite  blackPiece;
@@ -55,4 +59,5 @@ private :
 
     sf::Clock   myClock;
     Game      *currentGame;
+    QWidget   *qt;
 };

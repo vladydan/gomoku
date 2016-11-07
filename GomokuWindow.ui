@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1082</width>
+    <height>671</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -163,7 +163,11 @@
            </widget>
           </item>
           <item row="3" column="1">
-           <widget class="QCheckBox" name="cinqCassableCheckBox"/>
+           <widget class="QCheckBox" name="cinqCassableCheckBox">
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
           </item>
           <item row="1" column="1">
            <widget class="QLineEdit" name="playerTwoNameLineEdit"/>
@@ -176,7 +180,11 @@
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QCheckBox" name="leDoubleTroisCheckBox"/>
+           <widget class="QCheckBox" name="leDoubleTroisCheckBox">
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
           </item>
           <item row="2" column="0">
            <widget class="QLabel" name="leDoubleTroisLabel">
@@ -208,16 +216,93 @@
       </widget>
       <widget class="QWidget" name="gameRoom">
        <layout class="QGridLayout" name="_2">
-        <item row="1" column="2">
-         <widget class="QFrame" name="sfmlFrame">
-          <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>36</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <item row="1" column="3">
+         <layout class="QGridLayout" name="gridLayout_4" rowstretch="0" columnstretch="2,6" rowminimumheight="0" columnminimumwidth="0,0">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetMinAndMaxSize</enum>
           </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
+          <property name="bottomMargin">
+           <number>0</number>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout"/>
-         </widget>
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <item row="0" column="0">
+           <layout class="QVBoxLayout" name="verticalLayout_4">
+            <property name="topMargin">
+             <number>107</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>120</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="playerTurn">
+              <property name="font">
+               <font>
+                <family>Bandal</family>
+                <pointsize>20</pointsize>
+                <weight>50</weight>
+                <bold>false</bold>
+                <underline>false</underline>
+                <strikeout>false</strikeout>
+                <kerning>false</kerning>
+               </font>
+              </property>
+              <property name="text">
+               <string>White Turn</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="turn">
+              <property name="text">
+               <string>Turn : 0</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="whiteScore">
+              <property name="text">
+               <string>White : </string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="blackScore">
+              <property name="text">
+               <string>Black : </string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="0" column="1">
+           <widget class="QFrame" name="sfmlFrame">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout"/>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
@@ -230,8 +315,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
-     <height>26</height>
+     <width>1082</width>
+     <height>19</height>
     </rect>
    </property>
    <property name="nativeMenuBar">

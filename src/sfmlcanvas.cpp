@@ -26,6 +26,7 @@ void SFMLCanvas::OnInit()
     this->invalidPieceTexture.loadFromFile("ressources/invalid.png");
     this->whitePlayerTexture.loadFromFile("ressources/whiteTurn.png");
     this->blackPlayerTexture.loadFromFile("ressources/blackTurn.png");
+    this->pieceText.loadFromFile("ressources/black_transp.png");
 
     this->background.setTexture(this->backgroundTexture);
     this->background.scale(RenderWindow::getView().getSize() / 600.f);
@@ -36,7 +37,8 @@ void SFMLCanvas::OnInit()
     this->blackPiece.setScale(RenderWindow::getView().getSize() / 1800.f);
     this->invalidPiece.setTexture(this->invalidPieceTexture);
     this->invalidPiece.setScale(RenderWindow::getView().getSize() / 1800.f);
-
+    this->piece.setTexture(this->pieceText);
+    this->piece.setScale(RenderWindow::getView().getSize() / 1800.f);
     this->whiteWin.setTexture(this->whiteWinTexture);
     this->blackWin.setTexture(this->blackWinTexture);
     this->whitePlayer.setTexture(this->whitePlayerTexture);
@@ -73,7 +75,6 @@ void    SFMLCanvas::handleEvent()
 
         if (pionPos.x >= 0 && pionPos.x < 19 && pionPos.y >= 0 && pionPos.y < 19)
             this->trySetPiece(pionPos.x, pionPos.y);
-        std::cout << screenPos.x << " - " << screenPos.y << std::endl;
         wasPressed = true;
     }
     if (!sf::Mouse::isButtonPressed(sf::Mouse::Left) && wasPressed)
@@ -86,10 +87,11 @@ void    SFMLCanvas::drawState()
     RenderWindow::clear(sf::Color(0, 128, 0));
     RenderWindow::draw(this->background);
 
+    QLabel *label = this->qt->findChild<QLabel *>("playerTurn");
     if (currentPlayer == 'b')
-        RenderWindow::draw(this->blackPlayer);
+      label->setText("White turn");
     else if (currentPlayer == 'w')
-        RenderWindow::draw(this->whitePlayer);
+      label->setText("Black turn");
     for (int i = 0; i < 19; i++)
     {
         for (int e = 0; e < 19; e++)
@@ -105,9 +107,7 @@ void    SFMLCanvas::drawState()
             }
         }
     }
-//    RenderWindow::draw(this->currentTurn);
-//    RenderWindow::draw(this->whiteBreak);
-//    RenderWindow::draw(this->blackBreak);
+    this->drawTips();
     if (winner != -1)
         drawWinner(winner);
 }
@@ -179,8 +179,11 @@ void    SFMLCanvas::trySetPiece(unsigned int x, unsigned int y)
         this->pieces[x][y] = 'b';
     else if (piece.compare("white") == 0)
         this->pieces[x][y] = 'w';
+    else if (pieces[x][y] == 'b' || pieces[x][y] == 'w')
+        {
+        }
     else
-        this->pieces[x][y] = -700;
+       this->pieces[x][y] = -700;
 }
 
 void    SFMLCanvas::setCurrentPlayer(const std::string &color)
@@ -193,19 +196,25 @@ void    SFMLCanvas::setCurrentPlayer(const std::string &color)
 
  void    SFMLCanvas::updateStat(const std::string &turn, const std::string &black, const std::string &white)
 {
-   std::cout << "?" << std::endl;
-   QLabel *label = this->findChild<QLabel *>("turn");
-   if (label != nullptr)
-    {
-     std::cout << "nice " << std::endl;
-     label->setText("pepe");
-   }
-//    this->currentTurn.setString(turn);
-//    this->blackBreak.setString(black);
-//     this->whiteBreak.setString(white);
+   QLabel *label = this->qt->findChild<QLabel *>("turn");
+   label->setText(turn.c_str());
+   label = this->qt->findChild<QLabel *>("blackScore");
+   label->setText(black.c_str());
+   label = this->qt->findChild<QLabel *>("whiteScore");
+   label->setText(white.c_str());
 }
 
 void    SFMLCanvas::removePiece(unsigned int x, unsigned int y)
 {
     this->pieces[x][y] = -1;
+}
+
+void    SFMLCanvas::drawTips()
+{
+    sf::Vector2i mousePos = sf::Mouse::getPosition(*this);
+    sf::Vector2f screenPos = RenderWindow::mapPixelToCoords(mousePos);
+    sf::Vector2i pionPos = screenToGamePos(screenPos);
+
+    if (pionPos.x >= 0 && pionPos.x < 19 && pionPos.y >= 0 && pionPos.y < 19)
+        this->drawPiece(pionPos.x, pionPos.y, this->piece);
 }
