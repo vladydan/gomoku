@@ -203,6 +203,12 @@ bool	Game::checkdoubleThree(int const& x, int const& y, unsigned long long const
 	    }
 	}
     }
+  else
+    {
+      changeValue(x, y, COLORMASK, 1, 0);
+      changeValue(x, y, EMPTYMASK, 0, 0);
+      return (true);
+    }
   changeValue(x, y, COLORMASK, 1, 0);
   changeValue(x, y, EMPTYMASK, 0, 0);
   return (false);
