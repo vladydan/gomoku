@@ -196,8 +196,11 @@ void    SFMLCanvas::trySetPiece(unsigned int x, unsigned int y)
         this->pieces[x][y] = 'b';
     else if (piece.compare("white") == 0)
         this->pieces[x][y] = 'w';
+    else if (pieces[x][y] == 'b' || pieces[x][y] == 'w')
+        {
+        }
     else
-        this->pieces[x][y] = -700;
+       this->pieces[x][y] = -700;
 }
 
 void    SFMLCanvas::setCurrentPlayer(const std::string &color)
