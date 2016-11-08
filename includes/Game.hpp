@@ -114,6 +114,7 @@ public:
   explicit Game(Player*, Player*, bool, bool, SFMLCanvas *sfml);
   virtual ~Game() {}
 
+  int     getTurn() const;
   void	printBoard() const;
   std::string	play(unsigned int x, unsigned int y);
 };

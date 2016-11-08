@@ -87,11 +87,6 @@ void    SFMLCanvas::drawState()
     RenderWindow::clear(sf::Color(0, 128, 0));
     RenderWindow::draw(this->background);
 
-    QLabel *label = this->qt->findChild<QLabel *>("playerTurn");
-    if (currentPlayer == 'b')
-      label->setText("White turn");
-    else if (currentPlayer == 'w')
-      label->setText("Black turn");
     for (int i = 0; i < 19; i++)
     {
         for (int e = 0; e < 19; e++)
@@ -202,6 +197,12 @@ void    SFMLCanvas::setCurrentPlayer(const std::string &color)
    label->setText(black.c_str());
    label = this->qt->findChild<QLabel *>("whiteScore");
    label->setText(white.c_str());
+   label = this->qt->findChild<QLabel *>("playerTurn");
+   if (this->currentGame->getTurn() % 2 !=  0)
+     label->setText("White turn");
+   else
+     label->setText("Black turn");
+
 }
 
 void    SFMLCanvas::removePiece(unsigned int x, unsigned int y)
