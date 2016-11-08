@@ -456,6 +456,11 @@ void	Game::changeAround(int const& x, int const& y, int const& sign)
     }
 }
 
+int     Game::getTurn() const
+{
+  return this->_turn;
+}
+
 void		Game::printBoard()
 {
   for (int y = 0 ; y < Y_SIZE ; y++)
