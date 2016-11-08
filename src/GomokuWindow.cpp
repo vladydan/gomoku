@@ -59,7 +59,7 @@ void GomokuWindow::on_startButton_clicked()
   this->sfmlCanvas = new SFMLCanvas(this, QPoint(20, 20), QSize(360, 360));
   this->sfmlCanvas->show();
   this->findChild<QFrame *>("sfmlFrame")->layout()->addWidget(sfmlCanvas);
-  this->findChild<QLabel *>("playerTurn")->setText("White Turn");
+  this->findChild<QLabel *>("playerTurn")->setText("Black Turn");
   this->findChild<QLabel *>("turn")->setText("Turn : 0");
   this->findChild<QLabel *>("whiteScore")->setText("White : 0");
   this->findChild<QLabel *>("blackScore")->setText("Black : 0");
