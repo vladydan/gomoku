@@ -297,6 +297,8 @@ void	Game::deleteCase(int const& x, int const& y)
 	changeAligns(x + around[i].x, y + around[i].y);
 	changeBreakable(x + around[i].x, y + around[i].y);
       }
+      else if (getValue(x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0)
+	changeBreakable(x + around[i].x, y + around[i].y);
       ++i;
     }
 }
