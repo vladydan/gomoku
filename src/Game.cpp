@@ -298,14 +298,13 @@ void	Game::deleteCase(int const& x, int const& y)
 	changeBreakable(x + around[i].x, y + around[i].y);
       }
       else if (getValue(x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0)
-	changeBreakable(x + around[i].x, y + around[i].y);
+	checkBreakable(x + around[i].x, y + around[i].y);
       ++i;
     }
 }
 
-void	Game::affectBreakable(int const& x, int const& y, Player *player)
+void	Game::affectBreakable(int const& x, int const& y, Player *player, int i)
 {
-  int	i = 0;
   unsigned long long color = getValue(x, y, COLORMASK, 1);
 
   while (around[i].mask != 0)
@@ -319,6 +318,7 @@ void	Game::affectBreakable(int const& x, int const& y, Player *player)
 	    }
 	  else if (getValue(x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0)
 	    {
+	      affectBreakable(x, y, player, i + 1);
 	      deleteCase(x + around[i].x, y + around[i].y);
 	      deleteCase(x + 2 * (around[i].x), y + 2 * (around[i].y));
 	      player->setBroke(player->getBroke() + 2);
@@ -349,7 +349,6 @@ void	Game::checkBreakable(int const& x, int const& y)
 	      changeValue(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, BREAKABLE, BREAKABLEDEC, 1);
 	      changeValue(x, y, ((unsigned long long)1 << (BREAKABLEOFFDEC + i)), BREAKABLEOFFDEC + i, 1);
 	      changeValue(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, ((unsigned long long)1 << (BREAKABLEOFFDEC + i)), BREAKABLEOFFDEC  + i, 1);
-	      std::cout << getValue(x, y, BREAKABLEOFFDEC + i, BREAKABLEOFFDEC) << std::endl;
 	      breakable = true;
 	    }
 	  else if (getValue(x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0 &&
@@ -491,7 +490,7 @@ std::string	Game::play(unsigned int x, unsigned int y)
 	  changeValue(x, y, EMPTYMASK, 0, 1);
 	  changeAround(x, y, 1);
 	  changeAligns(x, y);
-	  affectBreakable(x, y, _players[_turn % 2]);
+	  affectBreakable(x, y, _players[_turn % 2], 0);
 	  changeBreakable(x, y);
 	  checkEnd();
 	  //	  printBoard();

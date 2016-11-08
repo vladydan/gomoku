@@ -102,7 +102,7 @@ class Game
   void		checkBreakable(int const&, int const&);
   bool		checkCase(int const&, int const&);
   void		changeBreakable(int const&, int const&);
-  void		affectBreakable(int const&, int const&, Player*);
+  void		affectBreakable(int const&, int const&, Player*, int);
   void		deleteCase(int const&, int const&);
   bool		checkBreakableFive(int const&, int const&);
   void		checkEnd();
