@@ -39,7 +39,7 @@ void	Game::changeValue(int const& x, int const& y, unsigned long long const& mas
   if (x >= 0 && x < X_SIZE && y >= 0 && y < Y_SIZE)
     {
       _board[y][x] &= ~mask;
-      _board[y][x] |= (unsigned long long)(value << decal);
+      _board[y][x] |= value << decal;
     }
 }
 
@@ -298,7 +298,10 @@ void	Game::deleteCase(int const& x, int const& y)
 	changeBreakable(x + around[i].x, y + around[i].y);
       }
       else if (getValue(x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0)
-	checkBreakable(x + around[i].x, y + around[i].y);
+	{
+	  checkBreakable(x + around[i].x, y + around[i].y);
+	  checkBreakable(x + 2 * around[i].x, y + 2 * around[i].y);
+	}
       ++i;
     }
 }
