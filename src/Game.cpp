@@ -30,7 +30,7 @@ Game::Game(Player *one, Player *two, bool bF, bool dTF, SFMLCanvas *sfml)
 unsigned long long	Game::getValue(int const& x, int const& y, unsigned long long const& mask, int const& decal) const
 {
   if (x >= 0 && x < X_SIZE && y >= 0 && y < Y_SIZE)
-    return ((_board[y][x] & mask) >> decal);
+    return ((_board[COORD(x, y)] & mask) >> decal);
   return (0);
 }
 
@@ -38,8 +38,8 @@ void	Game::changeValue(int const& x, int const& y, unsigned long long const& mas
 {
   if (x >= 0 && x < X_SIZE && y >= 0 && y < Y_SIZE)
     {
-      _board[y][x] &= ~mask;
-      _board[y][x] |= value << decal;
+      _board[COORD(x, y)] &= ~mask;
+      _board[COORD(x, y)] |= value << decal;
     }
 }
 
@@ -219,7 +219,7 @@ bool	Game::checkBreakableFive(int const& x, int const& y)
   int	i = 0;
   bool	broke;
 
-  if ((_board[y][x] & BREAKABLE) != 0)
+  if ((_board[COORD(x, y)] & BREAKABLE) != 0)
     return (true);
   while (i < 4)
     {
@@ -269,7 +269,7 @@ void	Game::checkEnd()
     {
       for (int x = 0; x < X_SIZE; ++x)
 	{
-	  if ((_board[y][x] & FIVEROW) != 0 && (!_breakableFive || !checkBreakableFive(x, y)))
+	  if ((_board[COORD(x, y)] & FIVEROW) != 0 && (!_breakableFive || !checkBreakableFive(x, y)))
 	    _playing = false;
 	}
     }
@@ -287,7 +287,7 @@ void	Game::deleteCase(int const& x, int const& y)
   unsigned long long	ar = getValue(x, y, AROUND, AROUNDDEC);
 
   changeAround(x, y, -1);
-  _board[y][x] = 0;
+  _board[COORD(x, y)] = 0;
   _sfml->removePiece(x, y);
   changeValue(x, y, AROUND, AROUNDDEC, ar);
   changeAligns(x, y);
@@ -503,7 +503,7 @@ std::string	Game::play(unsigned int x, unsigned int y)
 //    {
 //      printBoard();
       color = _players[_turn % 2]->getColor();
-      if ((_board[y][x] & EMPTYMASK) == 0 && (!_doubleThreeFree || !checkdoubleThree(x, y, color)))
+      if ((_board[COORD(x, y)] & EMPTYMASK) == 0 && (!_doubleThreeFree || !checkdoubleThree(x, y, color)))
 	{
 	  std::cout << "x : " << x << " y : " << y << std::endl;
 	  changeValue(x, y, COLORMASK, 1, color);

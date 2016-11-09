@@ -7,6 +7,8 @@
 #define X_SIZE 19
 #define Y_SIZE 19
 
+#define COORD(x, y)	(y * Y_SIZE + x)
+
 #define BLACK 0
 #define WHITE 1
 
@@ -84,7 +86,7 @@ class SFMLCanvas;
 
 class Game
 {
-  unsigned long long _board[Y_SIZE][X_SIZE];
+  unsigned long long _board[Y_SIZE * X_SIZE];
   bool		_playing;
   Player	*_players[2];
   int		_turn;
