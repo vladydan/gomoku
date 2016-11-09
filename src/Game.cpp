@@ -290,6 +290,7 @@ void	Game::deleteCase(int const& x, int const& y)
   _board[y][x] = 0;
   _sfml->removePiece(x, y);
   changeValue(x, y, AROUND, AROUNDDEC, ar);
+  changeAligns(x, y);
   while (around[i].mask != 0)
     {
       if (getValue(x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0 && getValue(x + around[i].x, y + around[i].y, COLORMASK, 1) == color)
@@ -409,7 +410,11 @@ void	Game::changeAlignsAround(int const& x, int const& y, unsigned long long con
 {
   if (x < 0 || x >= X_SIZE || y < 0 || y >= Y_SIZE)
     return;
-  unsigned long	long value = getValue(opp_x, opp_y, direction.opposite, direction.opp_decal) + 1;
+  unsigned long long value;
+  if (getValue(opp_x, opp_y, EMPTYMASK, 0) != 0)
+    value = getValue(opp_x, opp_y, direction.opposite, direction.opp_decal) + 1;
+  else
+    value = 0;
 
   changeValue(x, y, direction.opposite, direction.opp_decal, value);
   changeFiveRow(x, y);
@@ -423,15 +428,17 @@ void	Game::changeAligns(int const& x, int const& y)
   unsigned long	long value;
   unsigned long	long color = getValue(x, y, COLORMASK, 1);
 
-  while (around[i].mask != 0)
+  if (getValue(x, y, EMPTYMASK, 0) != 0)
     {
-      if (checkCase(x + around[i].x, y + around[i].y) && getValue(x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0 && getValue(x + around[i].x, y + around[i].y, COLORMASK, 1) == color)
+      while (around[i].mask != 0)
 	{
-	  value = getValue(x + around[i].x, y + around[i].y, around[i].mask, around[i].decal) + 1;
-	  changeValue(x, y, around[i].mask, around[i].decal, value);
+	  if (checkCase(x + around[i].x, y + around[i].y) && getValue(x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0 && getValue(x + around[i].x, y + around[i].y, COLORMASK, 1) == color)
+	    {
+	      value = getValue(x + around[i].x, y + around[i].y, around[i].mask, around[i].decal) + 1;
+	      changeValue(x, y, around[i].mask, around[i].decal, value);
+	    }
+	  ++i;
 	}
-      ++i;
-    }
   i = 0;
   while (around[i].mask != 0)
     {
@@ -440,6 +447,16 @@ void	Game::changeAligns(int const& x, int const& y)
       ++i;
     }
   changeFiveRow(x, y);
+    }
+  else
+    {
+      while (around[i].mask != 0)
+	{
+	  if (checkCase(x + around[i].x, y + around[i].y) && getValue(x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0)
+	    changeAlignsAround(x + around[i].x, y + around[i].y, getValue(x + around[i].x, y + around[i].y, COLORMASK, 1), x, y, around[i]);
+	  ++i;
+	}
+    }
 }
 
 void	Game::changeAround(int const& x, int const& y, int const& sign)
