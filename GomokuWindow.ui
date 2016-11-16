@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1082</width>
-    <height>671</height>
+    <width>1081</width>
+    <height>850</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -129,91 +129,6 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="gameForm">
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item>
-         <layout class="QGridLayout" name="gridLayout_5" columnstretch="0,0">
-          <property name="rightMargin">
-           <number>127</number>
-          </property>
-          <property name="bottomMargin">
-           <number>20</number>
-          </property>
-          <property name="horizontalSpacing">
-           <number>12</number>
-          </property>
-          <property name="verticalSpacing">
-           <number>0</number>
-          </property>
-          <item row="3" column="0">
-           <widget class="QLabel" name="cinqCassableLabel">
-            <property name="text">
-             <string>Cinq Cassable</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QLineEdit" name="playerOneNameLineEdit"/>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="playerTwoNameLabel">
-            <property name="text">
-             <string>Player Two Name</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QCheckBox" name="cinqCassableCheckBox">
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QLineEdit" name="playerTwoNameLineEdit"/>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="playerOneNameLabel">
-            <property name="text">
-             <string>Player One Name</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QCheckBox" name="leDoubleTroisCheckBox">
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="leDoubleTroisLabel">
-            <property name="text">
-             <string>Le Double Trois</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="1">
-           <widget class="QPushButton" name="startButton">
-            <property name="layoutDirection">
-             <enum>Qt::LeftToRight</enum>
-            </property>
-            <property name="text">
-             <string>Start</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QPushButton" name="backtoMenu">
-            <property name="text">
-             <string>Back to the menu</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </widget>
       <widget class="QWidget" name="gameRoom">
        <layout class="QGridLayout" name="_2">
         <property name="topMargin">
@@ -229,7 +144,7 @@
          <number>0</number>
         </property>
         <item row="1" column="3">
-         <layout class="QGridLayout" name="gridLayout_4" rowstretch="0" columnstretch="2,6" rowminimumheight="0" columnminimumwidth="0,0">
+         <layout class="QGridLayout" name="gridLayout_4" rowstretch="0" columnstretch="2,10" rowminimumheight="0" columnminimumwidth="0,0">
           <property name="sizeConstraint">
            <enum>QLayout::SetMinAndMaxSize</enum>
           </property>
@@ -265,6 +180,58 @@
               </property>
               <property name="text">
                <string>White Turn</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_3">
+              <item>
+               <widget class="QLabel" name="label">
+                <property name="text">
+                 <string>Double Trois</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="doubleTrois">
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_4">
+              <item>
+               <widget class="QLabel" name="label_2">
+                <property name="text">
+                 <string>Cinq Cassable</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="cinqCassble">
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+                <property name="tristate">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QLabel" name="time">
+              <property name="text">
+               <string>Time : 0</string>
               </property>
              </widget>
             </item>
@@ -315,7 +282,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1082</width>
+     <width>1081</width>
      <height>19</height>
     </rect>
    </property>

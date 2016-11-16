@@ -115,7 +115,8 @@ class Game
 public:
   explicit Game(Player*, Player*, bool, bool, SFMLCanvas *sfml);
   virtual ~Game() {}
-
+  void    setBreakableFive(bool);
+  void    setDoubleThreeFree(bool);
   int     getTurn() const;
   void	printBoard() const;
   std::string	play(unsigned int x, unsigned int y);

@@ -18,20 +18,21 @@ public:
     explicit GomokuWindow(QWidget *parent = 0);
     ~GomokuWindow();
 
+public slots:
+
+  void on_actionBack_to_the_menu_triggered();
+  void on_pvpButton_clicked();
+
 private slots:
     void on_exitButton_clicked();
 
-    void on_pvpButton_clicked();
-
     void on_actionExit_triggered();
 
-    void on_actionBack_to_the_menu_triggered();
-
-    void on_startButton_clicked();
-
-    void on_backtoMenu_clicked();
-
     void on_actionReplay_triggered();
+
+    void on_doubleTrois_stateChanged(int arg1);
+
+    void on_cinqCassble_stateChanged(int arg1);
 
 private:
     Ui::GomokuWindow *ui;

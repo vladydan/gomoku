@@ -30,6 +30,24 @@ void GomokuWindow::on_exitButton_clicked()
 void GomokuWindow::on_pvpButton_clicked()
 {
   this->stackedWidget->setCurrentIndex(1);
+  if (sfmlCanvas != nullptr)
+  {
+    this->findChild<QFrame *>("sfmlFrame")->layout()->removeWidget(this->sfmlCanvas);
+    delete this->sfmlCanvas;
+  }
+  this->sfmlCanvas = new SFMLCanvas(this->findChild<QFrame *>("sfmlFrame"), QPoint(20, 20), QSize(360, 360), this);
+  this->sfmlCanvas->show();
+  this->findChild<QFrame *>("sfmlFrame")->layout()->addWidget(sfmlCanvas);
+  this->findChild<QLabel *>("playerTurn")->setText("Black Turn");
+  this->findChild<QLabel *>("turn")->setText("Turn : 0");
+  this->findChild<QLabel *>("whiteScore")->setText("White : 0");
+  this->findChild<QLabel *>("blackScore")->setText("Black : 0");
+  playerOne = new Player(BLACK, "PlayerOne", Player::PLAYER);
+  playerTwo = new Player(WHITE, "PlayerTwo", Player::PLAYER);
+  currentGame = new Game(playerOne, playerTwo, true, true, this->sfmlCanvas);
+  this->findChild<QMenuBar *>("menuBar")->show();
+  this->stackedWidget->setCurrentIndex(2);
+  this->sfmlCanvas->setGame(currentGame);
 }
 
 void GomokuWindow::on_actionExit_triggered()
@@ -49,34 +67,18 @@ void GomokuWindow::on_actionBack_to_the_menu_triggered()
   this->stackedWidget->setCurrentIndex(0);
 }
 
-void GomokuWindow::on_startButton_clicked()
-{
-  if (sfmlCanvas != nullptr)
-  {
-    this->findChild<QFrame *>("sfmlFrame")->layout()->removeWidget(this->sfmlCanvas);
-    delete this->sfmlCanvas;
-  }
-  this->sfmlCanvas = new SFMLCanvas(this, QPoint(20, 20), QSize(360, 360));
-  this->sfmlCanvas->show();
-  this->findChild<QFrame *>("sfmlFrame")->layout()->addWidget(sfmlCanvas);
-  this->findChild<QLabel *>("playerTurn")->setText("Black Turn");
-  this->findChild<QLabel *>("turn")->setText("Turn : 0");
-  this->findChild<QLabel *>("whiteScore")->setText("White : 0");
-  this->findChild<QLabel *>("blackScore")->setText("Black : 0");
-  playerOne = new Player(BLACK, this->findChild<QLineEdit *>("playerOneNameLineEdit")->text().toLocal8Bit().constData(), Player::PLAYER);
-  playerTwo = new Player(WHITE,  this->findChild<QLineEdit *>("playerTwoNameLineEdit")->text().toLocal8Bit().constData(), Player::PLAYER);
-  currentGame = new Game(playerOne, playerTwo, this->findChild<QCheckBox *>("leDoubleTroisCheckBox")->isChecked(), this->findChild<QCheckBox *>("cinqCassableCheckBox")->isChecked(), this->sfmlCanvas);
-  this->findChild<QMenuBar *>("menuBar")->show();
-  this->stackedWidget->setCurrentIndex(2);
-  this->sfmlCanvas->setGame(currentGame);
-}
-
-void GomokuWindow::on_backtoMenu_clicked()
-{
-  this->stackedWidget->setCurrentIndex(0);
-}
 
 void GomokuWindow::on_actionReplay_triggered()
 {
-  this->on_startButton_clicked();
+  this->on_pvpButton_clicked();
+}
+
+void GomokuWindow::on_doubleTrois_stateChanged(int arg1)
+{
+  this->currentGame->setDoubleThreeFree(arg1);
+}
+
+void GomokuWindow::on_cinqCassble_stateChanged(int arg1)
+{
+  this->currentGame->setBreakableFive(arg1);
 }

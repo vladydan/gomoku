@@ -27,6 +27,16 @@ Game::Game(Player *one, Player *two, bool bF, bool dTF, SFMLCanvas *sfml)
   _sfml = sfml;
 }
 
+void    Game::setBreakableFive(bool state)
+{
+  this->_breakableFive = state;
+}
+
+void    Game::setDoubleThreeFree(bool state)
+{
+  this->_doubleThreeFree = state;
+}
+
 unsigned long long	Game::getValue(int const& x, int const& y, unsigned long long const& mask, int const& decal) const
 {
   if (x >= 0 && x < X_SIZE && y >= 0 && y < Y_SIZE)
@@ -505,7 +515,6 @@ std::string	Game::play(unsigned int x, unsigned int y)
       color = _players[_turn % 2]->getColor();
       if ((_board[COORD(x, y)] & EMPTYMASK) == 0 && (!_doubleThreeFree || !checkdoubleThree(x, y, color)))
 	{
-	  std::cout << "x : " << x << " y : " << y << std::endl;
 	  changeValue(x, y, COLORMASK, 1, color);
 	  changeValue(x, y, EMPTYMASK, 0, 1);
 	  changeAround(x, y, 1);

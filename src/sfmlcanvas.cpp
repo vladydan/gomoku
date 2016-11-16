@@ -1,6 +1,12 @@
+#include "GomokuWindow.hpp"
 #include "SFMLCanvas.hh"
 #include "Game.hpp"
 #include <QLabel>
+#include <QMessageBox>
+#include <QPushButton>
+#include <QFormLayout>
+#include <QDialogButtonBox>
+#include <QAction>
 
 void SFMLCanvas::setGame(Game *game)
 {
@@ -21,12 +27,11 @@ void SFMLCanvas::OnInit()
     this->backgroundTexture.loadFromFile("ressources/back.jpg");
     this->whitePieceTexture.loadFromFile("ressources/white.png");
     this->blackPieceTexture.loadFromFile("ressources/black.png");
-    this->whiteWinTexture.loadFromFile("ressources/whiteWin.png");
-    this->blackWinTexture.loadFromFile("ressources/blackWin.png");
     this->invalidPieceTexture.loadFromFile("ressources/invalid.png");
     this->whitePlayerTexture.loadFromFile("ressources/whiteTurn.png");
     this->blackPlayerTexture.loadFromFile("ressources/blackTurn.png");
     this->pieceText.loadFromFile("ressources/black_transp.png");
+    this->whiteTransp.loadFromFile("ressources/white_transp.png");
 
     this->background.setTexture(this->backgroundTexture);
     this->background.scale(RenderWindow::getView().getSize() / 600.f);
@@ -39,35 +44,26 @@ void SFMLCanvas::OnInit()
     this->invalidPiece.setScale(RenderWindow::getView().getSize() / 1800.f);
     this->piece.setTexture(this->pieceText);
     this->piece.setScale(RenderWindow::getView().getSize() / 1800.f);
-    this->whiteWin.setTexture(this->whiteWinTexture);
-    this->blackWin.setTexture(this->blackWinTexture);
+    this->transWhitePiece.setTexture(this->whiteTransp);
+    this->transWhitePiece.setScale(RenderWindow::getView().getSize() / 1800.f);
     this->whitePlayer.setTexture(this->whitePlayerTexture);
     this->blackPlayer.setTexture(this->blackPlayerTexture);
     this->blackPlayer.setPosition(170, 0);
     this->whitePlayer.setPosition(170,0);
-    this->whiteWin.setPosition(120, 150);
-    this->blackWin.setPosition(120, 150);
-
-    /*
-    this->pieces[0][0] ='b';
-    this->pieces[0][18] ='b';
-    this->pieces[18][0] ='b';
-    this->pieces[18][18] ='b';
-    */
+    this->myClock.restart();
 }
 
 void SFMLCanvas::OnUpdate()
 {
     this->handleEvent();
     this->drawState();
-    myClock.restart();
 }
 
 void    SFMLCanvas::handleEvent()
 {
     static bool wasPressed = false;
 
-    if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && !wasPressed)
+   if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && !wasPressed)
    {
         sf::Vector2i mousePos = sf::Mouse::getPosition(*this);
         sf::Vector2f screenPos = RenderWindow::mapPixelToCoords(mousePos);
@@ -76,10 +72,9 @@ void    SFMLCanvas::handleEvent()
         if (pionPos.x >= 0 && pionPos.x < 19 && pionPos.y >= 0 && pionPos.y < 19)
             this->trySetPiece(pionPos.x, pionPos.y);
         wasPressed = true;
-    }
+   }
     if (!sf::Mouse::isButtonPressed(sf::Mouse::Left) && wasPressed)
         wasPressed = false;
-
 }
 
 void    SFMLCanvas::drawState()
@@ -105,6 +100,8 @@ void    SFMLCanvas::drawState()
     this->drawTips();
     if (winner != -1)
         drawWinner(winner);
+     std::string time = "Time : " + std::to_string((int)this->myClock.getElapsedTime().asSeconds()) + " seconds";
+     this->qt->findChild<QLabel *>("time")->setText(time.c_str());
 }
 
 void    SFMLCanvas::drawPiece(unsigned int x, unsigned int y, sf::Sprite & piece)
@@ -151,10 +148,42 @@ void    SFMLCanvas::addPiece(const std::string &color, unsigned int x, unsigned 
 
 void    SFMLCanvas::drawWinner(char winner)
 {
-    if (winner == 'w')
-        RenderWindow::draw(this->whiteWin);
-    if (winner == 'b')
-        RenderWindow::draw(this->blackWin);
+     QDialog dialog(this);
+     dialog.setWindowOpacity(0.7);
+     QFormLayout form(&dialog);
+     QLabel *label;
+
+     if (winner == 'w')
+       label = new QLabel("White player won ! \nDo you want to replay ? ");
+     else
+       label = new QLabel("Black player won ! \nDo you want to replay ? ");
+     form.addRow(label);
+
+
+     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
+                                Qt::Horizontal, &dialog);
+     form.addRow(&buttonBox);
+     QObject::connect(&buttonBox, SIGNAL(accepted()), &dialog, SLOT(accept()));
+     QObject::connect(&buttonBox, SIGNAL(rejected()), &dialog, SLOT(reject()));
+
+     if (dialog.exec() == QDialog::Accepted) {
+       Player *playerOne = new Player(BLACK, "PlayerOne", Player::PLAYER);
+       Player *playerTwo = new Player(WHITE, "PlayerTwo", Player::PLAYER);
+       delete this->currentGame;
+       this->currentGame = new Game(playerOne, playerTwo, true, true, this);
+       this->winner = -1;
+       for (int i = 0; i < 19; i++)
+       {
+           for (int e = 0; e < 19; e++)
+           {
+              pieces[i][e] = 0;
+           }
+       }
+       this->updateStat("Turn :0", "Black : 0", "White : 0");
+       this->myClock.restart();
+     }
+     else
+       dynamic_cast<GomokuWindow *>(this->qt)->on_actionBack_to_the_menu_triggered();
 }
 
 void    SFMLCanvas::setWinner(const std::string &color)
@@ -169,7 +198,6 @@ void    SFMLCanvas::trySetPiece(unsigned int x, unsigned int y)
 {
     std::string     piece;
     piece = currentGame->play(x,y);
-    // piece = Appel methode arbitre pour savoir si on peu poser le pion (retourne black, white ou invalid
     if (piece.compare("black") == 0)
         this->pieces[x][y] = 'b';
     else if (piece.compare("white") == 0)
@@ -199,10 +227,9 @@ void    SFMLCanvas::setCurrentPlayer(const std::string &color)
    label->setText(white.c_str());
    label = this->qt->findChild<QLabel *>("playerTurn");
    if (this->currentGame->getTurn() % 2 !=  0)
-     label->setText("White turn");
+     label->setText("White Turn");
    else
-     label->setText("Black turn");
-
+     label->setText("Black Turn");
 }
 
 void    SFMLCanvas::removePiece(unsigned int x, unsigned int y)
@@ -217,5 +244,10 @@ void    SFMLCanvas::drawTips()
     sf::Vector2i pionPos = screenToGamePos(screenPos);
 
     if (pionPos.x >= 0 && pionPos.x < 19 && pionPos.y >= 0 && pionPos.y < 19)
-        this->drawPiece(pionPos.x, pionPos.y, this->piece);
+    {
+         if (this->currentGame->getTurn() % 2 !=  0)
+           this->drawPiece(pionPos.x, pionPos.y, this->transWhitePiece);
+        else
+          this->drawPiece(pionPos.x, pionPos.y, this->piece);
+    }
 }

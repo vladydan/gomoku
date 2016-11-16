@@ -1,4 +1,7 @@
+#pragma once
+
 #include "ASFMLCanvas.hpp"
+class GomokuWindow;
 #include <iostream>
 
 class Game;
@@ -7,10 +10,15 @@ class SFMLCanvas : public QSFMLCanvas
 {
 public :
 
-    SFMLCanvas(QWidget* Parent, const QPoint& Position, const QSize& Size) :
+    SFMLCanvas(QWidget* Parent, const QPoint& Position, const QSize& Size, GomokuWindow *qt) :
     QSFMLCanvas(Parent, Position, Size){
-      this->qt = Parent;
+      this->qt = qt;
     };
+
+    ~SFMLCanvas()
+    {
+
+    }
 
     void setGame(Game *game);
 
@@ -39,25 +47,23 @@ private :
     sf::Vector2f    coefAff;
 
     sf::Texture backgroundTexture;
-    sf::Texture blackWinTexture;
-    sf::Texture whiteWinTexture;
     sf::Texture invalidPieceTexture;
     sf::Texture whitePieceTexture;
     sf::Texture blackPieceTexture;
     sf::Texture whitePlayerTexture;
     sf::Texture blackPlayerTexture;
     sf::Texture pieceText;
+    sf::Texture whiteTransp;
+    sf::Sprite  transWhitePiece;
     sf::Sprite  piece;
     sf::Sprite  background;
     sf::Sprite  whitePiece;
     sf::Sprite  blackPiece;
     sf::Sprite  invalidPiece;
-    sf::Sprite  whiteWin;
-    sf::Sprite  blackWin;
     sf::Sprite  whitePlayer;
     sf::Sprite  blackPlayer;
 
     sf::Clock   myClock;
     Game      *currentGame;
-    QWidget   *qt;
+    GomokuWindow   *qt;
 };
