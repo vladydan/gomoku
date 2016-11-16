@@ -205,6 +205,7 @@ bool	Game::checkdoubleThree(int const& x, int const& y, unsigned long long const
 		  std::list<freeThree>	l = getfreeThreeList(it->cases[i].x, it->cases[i].y);
 		  if (checkdoubleInList(l))
 		    {
+		      std::cout << "double trois : " << it->cases[i].x << " " << it->cases[i].y << std::endl;
 		      changeValue(x, y, COLORMASK, 1, 0);
 		      changeValue(x, y, EMPTYMASK, 0, 0);
 		      return (true);
@@ -215,6 +216,7 @@ bool	Game::checkdoubleThree(int const& x, int const& y, unsigned long long const
     }
   else
     {
+      std::cout << "double trois : " << x << " " << y << std::endl;
       changeValue(x, y, COLORMASK, 1, 0);
       changeValue(x, y, EMPTYMASK, 0, 0);
       return (true);
@@ -550,6 +552,7 @@ std::string	Game::play(unsigned int x, unsigned int y)
       color = _players[_turn % 2]->getColor();
       if ((_board[COORD(x, y)] & EMPTYMASK) == 0 && (!_doubleThreeFree || !checkdoubleThree(x, y, color)))
 	{
+	  std::cout << x << " " << y << std::endl;
 	  changeValue(x, y, COLORMASK, 1, color);
 	  changeValue(x, y, EMPTYMASK, 0, 1);
 	  changeAround(x, y, 1);

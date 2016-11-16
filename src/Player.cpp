@@ -28,3 +28,8 @@ void		Player::setBroke(int const& value)
 {
   _broke = value;
 }
+
+void		Player::getPatterns(unsigned long long board[])
+{
+  (void)board;
+}
