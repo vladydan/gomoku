@@ -60,9 +60,9 @@ void	Game::printBoard() const
       for (int x = 0 ; x < X_SIZE ; ++x)
 	{
 	  if (getValue(x, y, EMPTYMASK, 0) == 0)
-	    std::cout << '0';
+	    std::cout << '.';
 	  else
-	    std::cout << getValue(x, y, COLORMASK, 1) + 1;
+	    std::cout << getValue(x, y, COLORMASK, 1);
 	}
       std::cout << std::endl;
     }
@@ -490,7 +490,7 @@ int     Game::getTurn() const
   return this->_turn;
 }
 
-void		Game::printBoard()
+/*void		Game::printBoard()
 {
   for (int y = 0 ; y < Y_SIZE ; y++)
     {
@@ -503,6 +503,40 @@ void		Game::printBoard()
 	}
       std::cout << std::endl;
     }
+}*/
+
+void		Game::playTerminal()
+{
+  int	x;
+  int	y;
+  int	color;
+
+  while (_playing)
+    {
+      printBoard();
+      color = _players[_turn % 2]->getColor();
+      std::cin >> x;
+      std::cin >> y;
+      if ((_board[COORD(x, y)] & EMPTYMASK) == 0 && (!_doubleThreeFree || !checkdoubleThree(x, y, color)))
+	{
+	  changeValue(x, y, COLORMASK, 1, color);
+	  changeValue(x, y, EMPTYMASK, 0, 1);
+	  changeAround(x, y, 1);
+	  changeAligns(x, y);
+	  affectBreakable(x, y, _players[_turn % 2], 0);
+	  changeBreakable(x, y);
+	  checkEnd();
+	  if (_playing)
+	    _turn++;
+	  else
+	    {
+	      if (_winner == NULL)
+		_winner = _players[_turn % 2];
+	    }
+	}
+    }
+      printBoard();
+      std::cout << "Player : " << _winner->getName() << " wins!" << std::endl;
 }
 
 std::string	Game::play(unsigned int x, unsigned int y)
