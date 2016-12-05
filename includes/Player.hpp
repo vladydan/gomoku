@@ -2,6 +2,8 @@
 
 #include <string>
 
+#define X_SIZE 19
+#define Y_SIZE 19
 #define BLACK 0
 #define WHITE 1
 
@@ -28,4 +30,5 @@ public:
   int		getBroke() const;
   int		getColor() const;
   void		setBroke(int const&);
+  void		getPatterns(unsigned long long board[]);
 };

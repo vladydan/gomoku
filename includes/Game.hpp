@@ -17,7 +17,7 @@
 #define COLORMASK	2 // 10
 #define FIVEROW		4 // 100
 #define BREAKABLE	8 // 1000
-#define FREETHREE	16 // 10000
+#define ZONE    	16 // 10000
 #define AROUND		480 // 1 11100000
 #define UP		3584 // 1110 00000000
 #define UPRIGHT		28672 // 1110000 00000000
@@ -36,7 +36,7 @@
 //decal masks
 #define FIVEROWDEC	2
 #define BREAKABLEDEC	3
-#define FREETHREEDEC	4
+#define ZONEDEC	    4
 #define AROUNDDEC	5
 #define UPDEC		9
 #define UPRIGHTDEC	12
@@ -95,30 +95,29 @@ class Game
   Player	*_winner;
   SFMLCanvas    *_sfml;
 
-  unsigned long	long	getValue(int const& ,int const& ,unsigned long long  const&, int const&) const;
-  void		changeValue(int const&, int const&, unsigned long long const&, int const&, unsigned long long const&);
-  void		changeAround(int const&, int const&, int const&);
-  void		changeAligns(int const&, int const&);
-  void		changeAlignsAround(int const&, int const&, unsigned long long const&, int const&, int const&, aroundCases const&);
-  void		changeFiveRow(int const&, int const&);
-  void		checkBreakable(int const&, int const&);
-  bool		checkCase(int const&, int const&);
-  void		changeBreakable(int const&, int const&);
-  void		affectBreakable(int const&, int const&, Player*, int);
-  void		deleteCase(int const&, int const&);
-  bool		checkBreakableFive(int const&, int const&);
-  void		checkEnd();
-  bool		checkdoubleThree(int const&, int const&, unsigned long long const&);
-  std::list<freeThree>	getfreeThreeList(int const&, int const&);
-  bool		checkdoubleInList(std::list<freeThree>&);
-  //  void		printBoard();
+  static void		changeAlignsAround(unsigned long long *board, int const&, int const&, unsigned long long const&, int const&, int const&, aroundCases const&);
+  static void		changeFiveRow(unsigned long long *board, int const&, int const&);
+  static void		checkBreakable(unsigned long long *board, int const&, int const&);
+  static bool		checkCase(int const&, int const&);
+  static void		deleteCase(unsigned long long *board, int const&, int const&, SFMLCanvas *sfml);
+  static bool		checkBreakableFive(unsigned long long *board, int const&, int const&);
+  static std::list<freeThree>	getfreeThreeList(unsigned long long *board, int const&, int const&);
+  static bool		checkdoubleInList(std::list<freeThree>&);
 public:
-  explicit Game(Player*, Player*, bool, bool, SFMLCanvas *sfml);
-  virtual ~Game() {}
-  void    setBreakableFive(bool);
-  void    setDoubleThreeFree(bool);
-  int     getTurn() const;
-  void	printBoard() const;
-  void	playTerminal();
-  std::string	play(unsigned int x, unsigned int y);
+    explicit Game(Player*, Player*, bool, bool, SFMLCanvas *sfml);
+    virtual ~Game() {}
+    static unsigned long	long	getValue(unsigned long long *board, int const& ,int const& ,unsigned long long  const&, int const&);
+    static void		changeValue(unsigned long long *board, int const&, int const&, unsigned long long const&, int const&, unsigned long long const&);
+    static void		changeAround(unsigned long long *board, int const&, int const&);
+    static void		changeAligns(unsigned long long *board, int const&, int const&);
+    static void		changeBreakable(unsigned long long *board, int const&, int const&);
+    static void		affectBreakable(unsigned long long *board, int const&, int const&, Player*, int, SFMLCanvas *sfml);
+    static bool		checkEnd(unsigned long long *board, bool bF);
+    static bool		checkdoubleThree(unsigned long long *board, int const&, int const&, unsigned long long const&);
+    void    setBreakableFive(bool);
+    void    setDoubleThreeFree(bool);
+    int     getTurn() const;
+    static void	printBoard(unsigned long long *board);
+    void	playTerminal();
+    std::string	play(unsigned int x, unsigned int y);
 };

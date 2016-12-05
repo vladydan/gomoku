@@ -197,6 +197,8 @@ void    SFMLCanvas::setWinner(const std::string &color)
 void    SFMLCanvas::trySetPiece(unsigned int x, unsigned int y)
 {
     std::string     piece;
+//    std::cin >> x;
+//    std::cin >> y;
     piece = currentGame->play(x,y);
     if (piece.compare("black") == 0)
         this->pieces[x][y] = 'b';

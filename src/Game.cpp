@@ -37,53 +37,53 @@ void    Game::setDoubleThreeFree(bool state)
   this->_doubleThreeFree = state;
 }
 
-unsigned long long	Game::getValue(int const& x, int const& y, unsigned long long const& mask, int const& decal) const
+unsigned long long	Game::getValue(unsigned long long *board, int const& x, int const& y, unsigned long long const& mask, int const& decal)
 {
   if (x >= 0 && x < X_SIZE && y >= 0 && y < Y_SIZE)
-    return ((_board[COORD(x, y)] & mask) >> decal);
+    return ((board[COORD(x, y)] & mask) >> decal);
   return (0);
 }
 
-void	Game::changeValue(int const& x, int const& y, unsigned long long const& mask, int const& decal, unsigned long long const& value)
+void	Game::changeValue(unsigned long long *board, int const& x, int const& y, unsigned long long const& mask, int const& decal, unsigned long long const& value)
 {
   if (x >= 0 && x < X_SIZE && y >= 0 && y < Y_SIZE)
     {
-      _board[COORD(x, y)] &= ~mask;
-      _board[COORD(x, y)] |= value << decal;
+      board[COORD(x, y)] &= ~mask;
+      board[COORD(x, y)] |= value << decal;
     }
 }
 
-void	Game::printBoard() const
+void	Game::printBoard(unsigned long long *board)
 {
   for (int y = 0; y < Y_SIZE ; ++y)
     {
       for (int x = 0 ; x < X_SIZE ; ++x)
 	{
-	  if (getValue(x, y, EMPTYMASK, 0) == 0)
+	  if (getValue(board, x, y, EMPTYMASK, 0) == 0)
 	    std::cout << '.';
 	  else
-	    std::cout << getValue(x, y, COLORMASK, 1);
+	    std::cout << getValue(board, x, y, COLORMASK, 1);
 	}
       std::cout << std::endl;
     }
 }
 
-std::list<freeThree>	Game::getfreeThreeList(int const& x, int const& y)
+std::list<freeThree>	Game::getfreeThreeList(unsigned long long *board, int const& x, int const& y)
 {
   int			i = 0;
-  unsigned long long	color = getValue(x, y, COLORMASK, 1);
+  unsigned long long	color = getValue(board, x, y, COLORMASK, 1);
   std::list<freeThree>	list;
 
   while (around[i].mask != 0)
     {
       if (checkCase(x + 3 * around[i].x, y + 3 * around[i].y) &&
 	  checkCase(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y) &&
-	  getValue(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, EMPTYMASK, 0) == 0 &&
-	  getValue(x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0 &&
-	  getValue(x + around[i].x, y + around[i].y, COLORMASK, 1) == color &&
-	  getValue(x + 2 * around[i].x, y + 2 * around[i].y, EMPTYMASK, 0) != 0 &&
-	  getValue(x + 2 * around[i].x, y + 2 * around[i].y, COLORMASK, 1) == color &&
-	  getValue(x + 3 * around[i].x, y + 3 * around[i].y, EMPTYMASK, 0) == 0)
+	  getValue(board, x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, EMPTYMASK, 0) == 0 &&
+	  getValue(board, x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0 &&
+	  getValue(board, x + around[i].x, y + around[i].y, COLORMASK, 1) == color &&
+	  getValue(board, x + 2 * around[i].x, y + 2 * around[i].y, EMPTYMASK, 0) != 0 &&
+	  getValue(board, x + 2 * around[i].x, y + 2 * around[i].y, COLORMASK, 1) == color &&
+	  getValue(board, x + 3 * around[i].x, y + 3 * around[i].y, EMPTYMASK, 0) == 0)
 	{
 	  freeThree	var;
 	  var.cases[0] = {x, y};
@@ -93,12 +93,12 @@ std::list<freeThree>	Game::getfreeThreeList(int const& x, int const& y)
 	}
       else if (checkCase(x + 2 * around[i].x, y + 2 * around[i].y) &&
 	       checkCase(x + 2 * around[around[i].opp_off].x, y + 2 * around[around[i].opp_off].y) &&
-	       getValue(x + 2 * around[i].x, y + 2 * around[i].y, EMPTYMASK, 0) == 0 &&
-	       getValue(x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0 &&
-	       getValue(x + around[i].x, y + around[i].y, COLORMASK, 1) == color &&
-	       getValue(x + 2 * around[around[i].opp_off].x, y + 2 * around[around[i].opp_off].y, EMPTYMASK, 0) == 0 &&
-	       getValue(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, EMPTYMASK, 0) != 0 &&
-	       getValue(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, COLORMASK, 1) == color)
+	       getValue(board, x + 2 * around[i].x, y + 2 * around[i].y, EMPTYMASK, 0) == 0 &&
+	       getValue(board, x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0 &&
+	       getValue(board, x + around[i].x, y + around[i].y, COLORMASK, 1) == color &&
+	       getValue(board, x + 2 * around[around[i].opp_off].x, y + 2 * around[around[i].opp_off].y, EMPTYMASK, 0) == 0 &&
+	       getValue(board, x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, EMPTYMASK, 0) != 0 &&
+	       getValue(board, x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, COLORMASK, 1) == color)
 	{
 	  freeThree	var;
 	  var.cases[0] = {x + around[i].x, y + around[i].y };
@@ -108,13 +108,13 @@ std::list<freeThree>	Game::getfreeThreeList(int const& x, int const& y)
 	}
       else if (checkCase(x + 2 * around[around[i].opp_off].x, y + 2 * around[around[i].opp_off].y) &&
 	       checkCase(x + 3 * around[i].x, y + 3 * around[i].y) &&
-	       getValue(x + 2 * around[around[i].opp_off].x, y + 2 * around[around[i].opp_off].y, EMPTYMASK, 0) == 0 &&
-	       getValue(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, EMPTYMASK, 0) != 0 &&
-	       getValue(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, COLORMASK, 1) == color &&
-	       getValue(x + around[i].x, y + around[i].y, EMPTYMASK, 0) == 0 &&
-	       getValue(x + 2 * around[i].x, y + 2 * around[i].y, EMPTYMASK, 0) != 0 &&
-	       getValue(x + 2 * around[i].x, y + 2 * around[i].y, COLORMASK, 1) == color &&
-	       getValue(x + 3 * around[i].x, y + 3 * around[i].y, EMPTYMASK, 0) == 0)
+	       getValue(board, x + 2 * around[around[i].opp_off].x, y + 2 * around[around[i].opp_off].y, EMPTYMASK, 0) == 0 &&
+	       getValue(board, x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, EMPTYMASK, 0) != 0 &&
+	       getValue(board, x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, COLORMASK, 1) == color &&
+	       getValue(board, x + around[i].x, y + around[i].y, EMPTYMASK, 0) == 0 &&
+	       getValue(board, x + 2 * around[i].x, y + 2 * around[i].y, EMPTYMASK, 0) != 0 &&
+	       getValue(board, x + 2 * around[i].x, y + 2 * around[i].y, COLORMASK, 1) == color &&
+	       getValue(board, x + 3 * around[i].x, y + 3 * around[i].y, EMPTYMASK, 0) == 0)
 	{
 	  freeThree	var;
 	  var.cases[0] = {x + around[around[i].opp_off].x, y + around[around[i].opp_off].y };
@@ -124,14 +124,14 @@ std::list<freeThree>	Game::getfreeThreeList(int const& x, int const& y)
 	}
       else if (checkCase(x + 4 * around[i].x, y + 4 * around[i].y) &&
 	       checkCase(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y) &&
-	       getValue(x + 4 * around[i].x, y + 4 * around[i].y, EMPTYMASK, 0) == 0 &&
-	       getValue(x + 3 * around[i].x, y + 3 * around[i].y, EMPTYMASK, 0) != 0 &&
-	       getValue(x + 3 * around[i].x, y + 3 * around[i].y, COLORMASK, 1) == color &&
-	       getValue(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, EMPTYMASK, 0) == 0)	       
+	       getValue(board, x + 4 * around[i].x, y + 4 * around[i].y, EMPTYMASK, 0) == 0 &&
+	       getValue(board, x + 3 * around[i].x, y + 3 * around[i].y, EMPTYMASK, 0) != 0 &&
+	       getValue(board, x + 3 * around[i].x, y + 3 * around[i].y, COLORMASK, 1) == color &&
+	       getValue(board, x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, EMPTYMASK, 0) == 0)
 	{
-	  if (getValue(x + 2 * around[i].x, y + 2 * around[i].y, EMPTYMASK, 0) == 0 &&
-	      getValue(x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0 &&
-	      getValue(x + around[i].x, y + around[i].y, COLORMASK, 1) == color)
+	  if (getValue(board, x + 2 * around[i].x, y + 2 * around[i].y, EMPTYMASK, 0) == 0 &&
+	      getValue(board, x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0 &&
+	      getValue(board, x + around[i].x, y + around[i].y, COLORMASK, 1) == color)
 	    {
 	      freeThree	var;
 	      var.cases[0] = {x, y };
@@ -139,9 +139,9 @@ std::list<freeThree>	Game::getfreeThreeList(int const& x, int const& y)
 	      var.cases[2] = {x + 3 * around[i].x, y + 3 * around[i].y };
 	      list.push_back(var);
 	    }
-	  else if (getValue(x + 2 * around[i].x, y + 2 * around[i].y, EMPTYMASK, 0) != 0 &&
-		   getValue(x + 2 * around[i].x, y + 2 * around[i].y, COLORMASK, 1) == color &&
-		   getValue(x + around[i].x, y + around[i].y, EMPTYMASK, 0) == 0)
+	  else if (getValue(board, x + 2 * around[i].x, y + 2 * around[i].y, EMPTYMASK, 0) != 0 &&
+		   getValue(board, x + 2 * around[i].x, y + 2 * around[i].y, COLORMASK, 1) == color &&
+		   getValue(board, x + around[i].x, y + around[i].y, EMPTYMASK, 0) == 0)
 	    {
 	      freeThree	var;
 	      var.cases[0] = {x, y};
@@ -187,13 +187,13 @@ bool	Game::checkdoubleInList(std::list<freeThree> & list)
   return (false);
 }
 
-bool	Game::checkdoubleThree(int const& x, int const& y, unsigned long long const& color)
+bool	Game::checkdoubleThree(unsigned long long *board, int const& x, int const& y, unsigned long long const& color)
 {
   std::list<freeThree>	list;
 
-  changeValue(x, y, COLORMASK, 1, color);
-  changeValue(x, y, EMPTYMASK, 0, 1);
-  list = getfreeThreeList(x, y);
+  changeValue(board, x, y, COLORMASK, 1, color);
+  changeValue(board, x, y, EMPTYMASK, 0, 1);
+  list = getfreeThreeList(board, x, y);
   if (!checkdoubleInList(list))
     {
       for (std::list<freeThree>::iterator it = list.begin() ; it != list.end() ; it++)
@@ -202,12 +202,12 @@ bool	Game::checkdoubleThree(int const& x, int const& y, unsigned long long const
 	    {
 	      if (it->cases[i].x != x || it->cases[i].y != y)
 		{
-		  std::list<freeThree>	l = getfreeThreeList(it->cases[i].x, it->cases[i].y);
+		  std::list<freeThree>	l = getfreeThreeList(board, it->cases[i].x, it->cases[i].y);
 		  if (checkdoubleInList(l))
 		    {
 		      std::cout << "double trois : " << it->cases[i].x << " " << it->cases[i].y << std::endl;
-		      changeValue(x, y, COLORMASK, 1, 0);
-		      changeValue(x, y, EMPTYMASK, 0, 0);
+		      changeValue(board, x, y, COLORMASK, 1, 0);
+		      changeValue(board, x, y, EMPTYMASK, 0, 0);
 		      return (true);
 		    }
 		}
@@ -217,33 +217,33 @@ bool	Game::checkdoubleThree(int const& x, int const& y, unsigned long long const
   else
     {
       std::cout << "double trois : " << x << " " << y << std::endl;
-      changeValue(x, y, COLORMASK, 1, 0);
-      changeValue(x, y, EMPTYMASK, 0, 0);
+      changeValue(board, x, y, COLORMASK, 1, 0);
+      changeValue(board, x, y, EMPTYMASK, 0, 0);
       return (true);
     }
-  changeValue(x, y, COLORMASK, 1, 0);
-  changeValue(x, y, EMPTYMASK, 0, 0);
+  changeValue(board, x, y, COLORMASK, 1, 0);
+  changeValue(board, x, y, EMPTYMASK, 0, 0);
   return (false);
 }
 
-bool	Game::checkBreakableFive(int const& x, int const& y)
+bool	Game::checkBreakableFive(unsigned long long *board, int const& x, int const& y)
 {
   int	i = 0;
   bool	broke;
 
-  if ((_board[COORD(x, y)] & BREAKABLE) != 0)
+  if ((board[COORD(x, y)] & BREAKABLE) != 0)
     return (true);
   while (i < 4)
     {
       broke = false;
-      int	sideOne = getValue(x, y, around[i].mask, around[i].decal);
-      int	sideTwo = getValue(x, y, around[i].opposite, around[i].opp_decal);
+      int	sideOne = (int) getValue(board, x, y, around[i].mask, around[i].decal);
+      int	sideTwo = (int) getValue(board, x, y, around[i].opposite, around[i].opp_decal);
       if ((sideOne + sideTwo + 1) >= 5)
 	{
 	  int	m = 0;
 	  for (m = 0 ; m < sideOne ; m++)
 	    {
-	      if (getValue(x + (m+1) * (around[i].x), y + (m+1) * (around[i].y), BREAKABLE, BREAKABLEDEC) != 0)
+	      if (getValue(board, x + (m+1) * (around[i].x), y + (m+1) * (around[i].y), BREAKABLE, BREAKABLEDEC) != 0)
 		{
 		  broke = true;
 		  break;
@@ -252,13 +252,13 @@ bool	Game::checkBreakableFive(int const& x, int const& y)
 	  int n = 0;
 	  for (n = 0 ; n < sideTwo ; n++)
 	    {
-	    if (getValue(x + (n+1) * (around[around[i].opp_off].x), y + (n+1) * (around[around[i].opp_off].y), BREAKABLE, BREAKABLEDEC) != 0)
+	    if (getValue(board, x + (n+1) * (around[around[i].opp_off].x), y + (n+1) * (around[around[i].opp_off].y), BREAKABLE, BREAKABLEDEC) != 0)
 	      {
 		broke = true;
 		break;
 	      }
 	    } 
-	  if (broke == false || (m + n + 1) >= 5)
+	  if (!broke || (m + n + 1) >= 5)
 	    return (false);
 	}
       ++i;
@@ -266,9 +266,10 @@ bool	Game::checkBreakableFive(int const& x, int const& y)
   return (true);
 }
 
-void	Game::checkEnd()
+
+bool	Game::checkEnd(unsigned long long *board, bool breakableFive)
 {
-  for (int i = 0 ; i < 2 ; i++)
+/*  for (int i = 0 ; i < 2 ; i++)
     {
       if (_players[i]->getBroke() >= 10)
 	{
@@ -276,15 +277,16 @@ void	Game::checkEnd()
 	  _winner = _players[i];
 	  return;
 	}
-    }
+    }*/
   for (int y = 0; y < Y_SIZE ; ++y)
     {
       for (int x = 0; x < X_SIZE; ++x)
 	{
-	  if ((_board[COORD(x, y)] & FIVEROW) != 0 && (!_breakableFive || !checkBreakableFive(x, y)))
-	    _playing = false;
+	  if ((board[COORD(x, y)] & FIVEROW) != 0 && (!breakableFive || !checkBreakableFive(board, x, y)))
+	    return (false);
 	}
     }
+	return (true);
 }
 
 bool	Game::checkCase(int const& x, int const& y)
@@ -292,52 +294,52 @@ bool	Game::checkCase(int const& x, int const& y)
   return (x >= 0 && x < X_SIZE && y >= 0 && y < Y_SIZE);
 }
 
-void	Game::deleteCase(int const& x, int const& y)
+void	Game::deleteCase(unsigned long long *board, int const& x, int const& y, SFMLCanvas *sfml)
 {
   int	i = 0;
-  unsigned long long	color = getValue(x, y, COLORMASK, 1);
-  unsigned long long	ar = getValue(x, y, AROUND, AROUNDDEC);
+  unsigned long long	color = getValue(board, x, y, COLORMASK, 1);
+  unsigned long long	ar = getValue(board, x, y, AROUND, AROUNDDEC);
 
-  changeAround(x, y, -1);
-  _board[COORD(x, y)] = 0;
-  if (_sfml)
-    _sfml->removePiece(x, y);
-  changeValue(x, y, AROUND, AROUNDDEC, ar);
-  changeAligns(x, y);
+  changeAround(board, x, y);
+  board[COORD(x, y)] = 0;
+  if (sfml)
+    sfml->removePiece(x, y);
+  changeValue(board, x, y, AROUND, AROUNDDEC, ar);
+  changeAligns(board, x, y);
   while (around[i].mask != 0)
     {
-      if (getValue(x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0 && getValue(x + around[i].x, y + around[i].y, COLORMASK, 1) == color)
+      if (getValue(board, x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0 && getValue(board, x + around[i].x, y + around[i].y, COLORMASK, 1) == color)
       {
-	changeAligns(x + around[i].x, y + around[i].y);
-	changeBreakable(x + around[i].x, y + around[i].y);
+	changeAligns(board, x + around[i].x, y + around[i].y);
+	changeBreakable(board, x + around[i].x, y + around[i].y);
       }
-      else if (getValue(x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0)
+      else if (getValue(board, x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0)
 	{
-	  checkBreakable(x + around[i].x, y + around[i].y);
-	  checkBreakable(x + 2 * around[i].x, y + 2 * around[i].y);
+	  checkBreakable(board, x + around[i].x, y + around[i].y);
+	  checkBreakable(board, x + 2 * around[i].x, y + 2 * around[i].y);
 	}
       ++i;
     }
 }
 
-void	Game::affectBreakable(int const& x, int const& y, Player *player, int i)
+void	Game::affectBreakable(unsigned long long *board, int const& x, int const& y, Player *player, int i, SFMLCanvas *sfml)
 {
-  unsigned long long color = getValue(x, y, COLORMASK, 1);
+  unsigned long long color = getValue(board, x, y, COLORMASK, 1);
 
   while (around[i].mask != 0)
     {
-      if (checkCase(x + around[i].x, y + around[i].y) && (getValue(x + around[i].x, y + around[i].y, BREAKABLE_OFF, BREAKABLEOFFDEC) & (1 << around[i].opp_off)) != 0)
+      if (checkCase(x + around[i].x, y + around[i].y) && (getValue(board, x + around[i].x, y + around[i].y, BREAKABLE_OFF, BREAKABLEOFFDEC) & (1 << around[i].opp_off)) != 0)
 	{
-	  if (getValue(x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0 && getValue(x + around[i].x, y + around[i].y, COLORMASK, 1) == color)
+	  if (getValue(board, x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0 && getValue(board, x + around[i].x, y + around[i].y, COLORMASK, 1) == color)
 	    {
-	      checkBreakable(x + around[i].x, y + around[i].y);
-	      checkBreakable(x + 2 * (around[i].x), y + 2 * (around[i].y));
+	      checkBreakable(board, x + around[i].x, y + around[i].y);
+	      checkBreakable(board, x + 2 * (around[i].x), y + 2 * (around[i].y));
 	    }
-	  else if (getValue(x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0)
+	  else if (getValue(board, x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0)
 	    {
-	      affectBreakable(x, y, player, i + 1);
-	      deleteCase(x + around[i].x, y + around[i].y);
-	      deleteCase(x + 2 * (around[i].x), y + 2 * (around[i].y));
+	      affectBreakable(board, x, y, player, i + 1, sfml);
+	      deleteCase(board, x + around[i].x, y + around[i].y, sfml);
+	      deleteCase(board, x + 2 * (around[i].x), y + 2 * (around[i].y), sfml);
 	      player->setBroke(player->getBroke() + 2);
 	    }
 	}
@@ -345,145 +347,146 @@ void	Game::affectBreakable(int const& x, int const& y, Player *player, int i)
     }
 }
 
-void	Game::checkBreakable(int const& x, int const& y)
+void	Game::checkBreakable(unsigned long long *board, int const& x, int const& y)
 {
   int	i = 0;
-  unsigned long long color = getValue(x, y, COLORMASK, 1);
+  unsigned long long color = getValue(board, x, y, COLORMASK, 1);
   bool	breakable = false;
 
-  changeValue(x, y, BREAKABLE_OFF, BREAKABLEOFFDEC, 0); // reinit le breakableoff
+  changeValue(board, x, y, BREAKABLE_OFF, BREAKABLEOFFDEC, 0); // reinit le breakableoff
   while (around[i].mask != 0)
     {
       if (checkCase(x + around[i].x, y + around[i].y) && checkCase(x + 2 * (around[around[i].opp_off].x), y + 2 * (around[around[i].opp_off].y)))
 	{
-	  if (getValue(x + around[i].x, y + around[i].y, EMPTYMASK, 0) == 0 &&
-	      getValue(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, EMPTYMASK, 0) != 0 &&
-	      getValue(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, COLORMASK, 1) == color &&
-	      getValue(x + 2 *(around[around[i].opp_off].x), y + 2 * (around[around[i].opp_off].y), EMPTYMASK, 0) != 0 &&
-	      getValue(x + 2 * (around[around[i].opp_off].x), y + 2 * (around[around[i].opp_off].y), COLORMASK, 1) != color)
+	  if (getValue(board, x + around[i].x, y + around[i].y, EMPTYMASK, 0) == 0 &&
+	      getValue(board, x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, EMPTYMASK, 0) != 0 &&
+	      getValue(board, x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, COLORMASK, 1) == color &&
+	      getValue(board, x + 2 *(around[around[i].opp_off].x), y + 2 * (around[around[i].opp_off].y), EMPTYMASK, 0) != 0 &&
+	      getValue(board, x + 2 * (around[around[i].opp_off].x), y + 2 * (around[around[i].opp_off].y), COLORMASK, 1) != color)
 	    {
-	      changeValue(x, y, BREAKABLE, BREAKABLEDEC, 1);
-	      changeValue(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, BREAKABLE, BREAKABLEDEC, 1);
-	      changeValue(x, y, ((unsigned long long)1 << (BREAKABLEOFFDEC + i)), BREAKABLEOFFDEC + i, 1);
-	      changeValue(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, ((unsigned long long)1 << (BREAKABLEOFFDEC + i)), BREAKABLEOFFDEC  + i, 1);
+	      changeValue(board, x, y, BREAKABLE, BREAKABLEDEC, 1);
+	      changeValue(board, x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, BREAKABLE, BREAKABLEDEC, 1);
+	      changeValue(board, x, y, ((unsigned long long)1 << (BREAKABLEOFFDEC + i)), BREAKABLEOFFDEC + i, 1);
+	      changeValue(board, x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, ((unsigned long long)1 << (BREAKABLEOFFDEC + i)), BREAKABLEOFFDEC  + i, 1);
 	      breakable = true;
 	    }
-	  else if (getValue(x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0 &&
-		   getValue(x + around[i].x, y + around[i].y, COLORMASK, 1) != color &&
-		   getValue(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, EMPTYMASK, 0) != 0 &&
-		   getValue(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, COLORMASK, 1) == color &&
-		   getValue(x + 2 * (around[around[i].opp_off].x), y + 2 * (around[around[i].opp_off].y), EMPTYMASK, 0) == 0)
+	  else if (getValue(board, x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0 &&
+		   getValue(board, x + around[i].x, y + around[i].y, COLORMASK, 1) != color &&
+		   getValue(board, x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, EMPTYMASK, 0) != 0 &&
+		   getValue(board, x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, COLORMASK, 1) == color &&
+		   getValue(board, x + 2 * (around[around[i].opp_off].x), y + 2 * (around[around[i].opp_off].y), EMPTYMASK, 0) == 0)
 	    {
-	      changeValue(x, y, BREAKABLE, BREAKABLEDEC, 1);
-	      changeValue(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, BREAKABLE, BREAKABLEDEC, 1);
-	      changeValue(x, y, ((unsigned long long)1 << (BREAKABLEOFFDEC + around[i].opp_off)), BREAKABLEOFFDEC + around[i].opp_off, 1);
-	      changeValue(x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, ((unsigned long long)1 << (BREAKABLEOFFDEC + around[i].opp_off)), BREAKABLEOFFDEC + around[i].opp_off, 1);
+	      changeValue(board, x, y, BREAKABLE, BREAKABLEDEC, 1);
+	      changeValue(board, x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, BREAKABLE, BREAKABLEDEC, 1);
+	      changeValue(board, x, y, ((unsigned long long)1 << (BREAKABLEOFFDEC + around[i].opp_off)), BREAKABLEOFFDEC + around[i].opp_off, 1);
+	      changeValue(board, x + around[around[i].opp_off].x, y + around[around[i].opp_off].y, ((unsigned long long)1 << (BREAKABLEOFFDEC + around[i].opp_off)), BREAKABLEOFFDEC + around[i].opp_off, 1);
 	      breakable = true;
 	    }
 	}
       ++i;
     }
-  if (breakable == false)
-    changeValue(x, y, BREAKABLE, BREAKABLEDEC, 0);
+  if (!breakable)
+    changeValue(board, x, y, BREAKABLE, BREAKABLEDEC, 0);
 }
 
-void	Game::changeBreakable(int const& x, int const& y)
+void	Game::changeBreakable(unsigned long long *board, int const& x, int const& y)
 {
   int	i = 0;
-  unsigned long long color = getValue(x, y, COLORMASK, 1);
+  unsigned long long color = getValue(board, x, y, COLORMASK, 1);
 
   while (around[i].mask != 0)
     {
-      if (checkCase(x + around[i].x, y + around[i].y) && getValue(x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0 && getValue(x + around[i].x, y + around[i].y, COLORMASK, 1) != color)
-	checkBreakable(x + around[i].x, y + around[i].y);
+      if (checkCase(x + around[i].x, y + around[i].y) && getValue(board, x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0 && getValue(board, x + around[i].x, y + around[i].y, COLORMASK, 1) != color)
+	checkBreakable(board, x + around[i].x, y + around[i].y);
       ++i;
     }
-  checkBreakable(x, y);
+  checkBreakable(board, x, y);
 }
 
-void	Game::changeFiveRow(int const& x, int const& y)
+void	Game::changeFiveRow(unsigned long long *board, int const& x, int const& y)
 {
   int	i = 0;
   unsigned long	long value;
 
   while (around[i].mask != 0)
     {
-      value = getValue(x, y, around[i].mask, around[i].decal) + getValue(x, y, around[i].opposite, around[i].opp_decal) + 1;
+      value = getValue(board, x, y, around[i].mask, around[i].decal) + getValue(board, x, y, around[i].opposite, around[i].opp_decal) + 1;
       if (value >= 5)
 	{
-	  changeValue(x, y, FIVEROW, FIVEROWDEC, 1);
+	  changeValue(board, x, y, FIVEROW, FIVEROWDEC, 1);
 	  return;
 	}
       ++i;
     }
-  changeValue(x, y, FIVEROW, FIVEROWDEC, 0);
+  changeValue(board, x, y, FIVEROW, FIVEROWDEC, 0);
 }
 
-void	Game::changeAlignsAround(int const& x, int const& y, unsigned long long const& color, int const& opp_x, int const& opp_y, aroundCases const& direction)
+void	Game::changeAlignsAround(unsigned long long *board, int const& x, int const& y, unsigned long long const& color, int const& opp_x, int const& opp_y, aroundCases const& direction)
 {
   if (x < 0 || x >= X_SIZE || y < 0 || y >= Y_SIZE)
     return;
   unsigned long long value;
-  if (getValue(opp_x, opp_y, EMPTYMASK, 0) != 0)
-    value = getValue(opp_x, opp_y, direction.opposite, direction.opp_decal) + 1;
+  if (getValue(board, opp_x, opp_y, EMPTYMASK, 0) != 0)
+    value = getValue(board, opp_x, opp_y, direction.opposite, direction.opp_decal) + 1;
   else
     value = 0;
 
-  changeValue(x, y, direction.opposite, direction.opp_decal, value);
-  changeFiveRow(x, y);
-  if (checkCase(x + direction.x, y + direction.y) && getValue(x + direction.x, y + direction.y, EMPTYMASK, 0) != 0 && getValue(x + direction.x, y + direction.y, COLORMASK, 1) == color)
-    changeAlignsAround(x + direction.x, y + direction.y, color, x, y, direction);
+  changeValue(board, x, y, direction.opposite, direction.opp_decal, value);
+  changeFiveRow(board, x, y);
+  if (checkCase(x + direction.x, y + direction.y) && getValue(board, x + direction.x, y + direction.y, EMPTYMASK, 0) != 0 && getValue(board, x + direction.x, y + direction.y, COLORMASK, 1) == color)
+    changeAlignsAround(board, x + direction.x, y + direction.y, color, x, y, direction);
 }
 
-void	Game::changeAligns(int const& x, int const& y)
+void	Game::changeAligns(unsigned long long *board, int const& x, int const& y)
 {
   int	i = 0;
   unsigned long	long value;
-  unsigned long	long color = getValue(x, y, COLORMASK, 1);
+  unsigned long	long color = getValue(board, x, y, COLORMASK, 1);
 
-  if (getValue(x, y, EMPTYMASK, 0) != 0)
+  if (getValue(board, x, y, EMPTYMASK, 0) != 0)
     {
       while (around[i].mask != 0)
 	{
-	  if (checkCase(x + around[i].x, y + around[i].y) && getValue(x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0 && getValue(x + around[i].x, y + around[i].y, COLORMASK, 1) == color)
+	  if (checkCase(x + around[i].x, y + around[i].y) && getValue(board, x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0 && getValue(board, x + around[i].x, y + around[i].y, COLORMASK, 1) == color)
 	    {
-	      value = getValue(x + around[i].x, y + around[i].y, around[i].mask, around[i].decal) + 1;
-	      changeValue(x, y, around[i].mask, around[i].decal, value);
+	      value = getValue(board, x + around[i].x, y + around[i].y, around[i].mask, around[i].decal) + 1;
+	      changeValue(board, x, y, around[i].mask, around[i].decal, value);
 	    }
 	  ++i;
 	}
   i = 0;
   while (around[i].mask != 0)
     {
-      if (checkCase(x + around[i].x, y + around[i].y) && getValue(x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0 && getValue(x + around[i].x, y + around[i].y, COLORMASK, 1) == color)
-	changeAlignsAround(x + around[i].x, y + around[i].y, color, x, y, around[i]);
+      if (checkCase(x + around[i].x, y + around[i].y) && getValue(board, x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0 && getValue(board, x + around[i].x, y + around[i].y, COLORMASK, 1) == color)
+	changeAlignsAround(board, x + around[i].x, y + around[i].y, color, x, y, around[i]);
       ++i;
     }
-  changeFiveRow(x, y);
+  changeFiveRow(board, x, y);
     }
   else
     {
       while (around[i].mask != 0)
 	{
-	  if (checkCase(x + around[i].x, y + around[i].y) && getValue(x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0)
-	    changeAlignsAround(x + around[i].x, y + around[i].y, getValue(x + around[i].x, y + around[i].y, COLORMASK, 1), x, y, around[i]);
+	  if (checkCase(x + around[i].x, y + around[i].y) && getValue(board, x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0)
+	    changeAlignsAround(board, x + around[i].x, y + around[i].y, getValue(board, x + around[i].x, y + around[i].y, COLORMASK, 1), x, y, around[i]);
 	  ++i;
 	}
     }
 }
 
-void	Game::changeAround(int const& x, int const& y, int const& sign)
+void	Game::changeAround(unsigned long long *board, int const& x, int const& y)
 {
   int	i = 0;
-  unsigned long	long value;
 
   while (around[i].mask != 0)
     {
       if (checkCase(x + around[i].x, y + around[i].y))
-	{
-	  value = getValue(x + around[i].x, y + around[i].y, AROUND, AROUNDDEC) + sign;
-	  changeValue(x + around[i].x, y + around[i].y, AROUND, AROUNDDEC, value);
-	}
+    	{
+	        changeValue(board, x + around[i].x, y + around[i].y, ZONE, ZONEDEC, 1);
+	    }
+        if (checkCase(x + 2 * around[i].x, y + 2 * around[i].y)) {
+            changeValue(board, x + 2 * around[i].x, y + 2 * around[i].y, ZONE, ZONEDEC, 1);
+        }
       ++i;
     }
 }
@@ -516,20 +519,20 @@ void		Game::playTerminal()
 
   while (_playing)
     {
-      printBoard();
+      printBoard(_board);
       color = _players[_turn % 2]->getColor();
       std::cin >> x;
       std::cin >> y;
-      if ((_board[COORD(x, y)] & EMPTYMASK) == 0 && (!_doubleThreeFree || !checkdoubleThree(x, y, color)))
+      if ((_board[COORD(x, y)] & EMPTYMASK) == 0 && (!_doubleThreeFree || !checkdoubleThree(_board, x, y, color)))
 	{
-	  changeValue(x, y, COLORMASK, 1, color);
-	  changeValue(x, y, EMPTYMASK, 0, 1);
-	  changeAround(x, y, 1);
-	  changeAligns(x, y);
-	  affectBreakable(x, y, _players[_turn % 2], 0);
-	  changeBreakable(x, y);
-	  checkEnd();
-	  if (_playing)
+	  changeValue(_board, x, y, COLORMASK, 1, color);
+	  changeValue(_board, x, y, EMPTYMASK, 0, 1);
+	  changeAround(_board, x, y);
+	  changeAligns(_board, x, y);
+	  affectBreakable(_board, x, y, _players[_turn % 2], 0, NULL);
+	  changeBreakable(_board, x, y);
+	  _playing = checkEnd(_board, _breakableFive);
+	  if (_playing && _players[0]->getBroke() < 10 && _players[1]->getBroke() < 10)
 	    _turn++;
 	  else
 	    {
@@ -538,7 +541,7 @@ void		Game::playTerminal()
 	    }
 	}
     }
-      printBoard();
+      printBoard(_board);
       std::cout << "Player : " << _winner->getName() << " wins!" << std::endl;
 }
 
@@ -546,22 +549,19 @@ std::string	Game::play(unsigned int x, unsigned int y)
 {
   int	color;
 
-//  while (_playing)
-//    {
-//      printBoard();
       color = _players[_turn % 2]->getColor();
-      if ((_board[COORD(x, y)] & EMPTYMASK) == 0 && (!_doubleThreeFree || !checkdoubleThree(x, y, color)))
+      if ((_board[COORD(x, y)] & EMPTYMASK) == 0 && (!_doubleThreeFree || !checkdoubleThree(_board, x, y, color)))
 	{
 	  std::cout << x << " " << y << std::endl;
-	  changeValue(x, y, COLORMASK, 1, color);
-	  changeValue(x, y, EMPTYMASK, 0, 1);
-	  changeAround(x, y, 1);
-	  changeAligns(x, y);
-	  affectBreakable(x, y, _players[_turn % 2], 0);
-	  changeBreakable(x, y);
-	  checkEnd();
+	  changeValue(_board, x, y, COLORMASK, 1, color);
+	  changeValue(_board, x, y, EMPTYMASK, 0, 1);
+	  changeAround(_board, x, y);
+	  changeAligns(_board, x, y);
+	  affectBreakable(_board, x, y, _players[_turn % 2], 0, _sfml);
+	  changeBreakable(_board, x, y);
+	  _playing = checkEnd(_board, _breakableFive);
 	  //	  printBoard();
-	  if (_playing)
+	  if (_playing && _players[0]->getBroke() < 10 && _players[1]->getBroke() < 10)
 	    {
 	      _turn++;
 	      _sfml->updateStat("Turn : " + std::to_string(_turn), "Black : " + std::to_string(_players[0]->getBroke()), "White : "+ std::to_string(_players[1]->getBroke()));
@@ -576,12 +576,7 @@ std::string	Game::play(unsigned int x, unsigned int y)
 	}
       else
 	{
-	  //	  std::cout << "Can't play here" << std::endl;
 	  return ("null");
 	}
   return (color == 0 ? "black" : "white");
-//  printBoard();
-  //if (_winner == NULL)
-    //_winner = _players[_turn % 2];
-  //std::cout << "Player : " << _winner->getName() << " wins!" << std::endl;
 }
