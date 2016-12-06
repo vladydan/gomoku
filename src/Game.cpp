@@ -74,7 +74,7 @@ int         Game::getPatternScore(std::string const &pat, bool TwoD, int const &
         return ((int) (- pow(10, (broke / 2) + 1)));
     }
     if (TwoD) {
-        return((int) pow(10, round(std::count(pat.begin(), pat.end(), 'x') / 2)));
+        return((int) pow(10, (round(std::count(pat.begin(), pat.end(), 'x') / 2)) + 1));
     }
     else {
         return ((int) pow(10, std::count(pat.begin(), pat.end(), 'x')));
@@ -692,21 +692,6 @@ int     Game::getTurn() const
   return this->_turn;
 }
 
-/*void		Game::printBoard()
-{
-  for (int y = 0 ; y < Y_SIZE ; y++)
-    {
-      for (int x = 0 ; x < X_SIZE ; x++)
-	{
-	  if (getValue(x, y, EMPTYMASK, 0) != 0)
-	    std::cout << getValue(x, y, COLORMASK, 1) + 1;
-	  else
-	    std::cout << "0";
-	}
-      std::cout << std::endl;
-    }
-}*/
-
 void		Game::playTerminal()
 {
   int	x;
@@ -715,9 +700,6 @@ void		Game::playTerminal()
     std::list<Pattern> found;
 
     initPatternsMap();
-/*    for (std::map<std::string, Pattern>::iterator it = patternsMap.begin() ; it != patternsMap.end() ; it++) {
-        std::cout << it->first << " : " << it->second.getScore() << std::endl;
-    }*/
   while (_playing)
     {
       printBoard(_board);
@@ -770,15 +752,16 @@ void		Game::playTerminal()
     for (int i = 0 ; i < 2 ; i++) {
         for (const Pattern & p : _players[i]->getPatterns()) {
             if (_players[i] == _winner)
-                patternsMap[p.getPattern()].setScore(std::min(patternsMap[p.getPattern()].getScore() + 3, patternsMap[p.getPattern()].getAverageScore() + (patternsMap[p.getPattern()].getAverageScore() / 10)));
+                patternsMap[p.getPattern()].setScore(std::min(patternsMap[p.getPattern()].getScore() + 3, patternsMap[p.getPattern()].getAverageScore() + 100));
             else
-                patternsMap[p.getPattern()].setScore(std::max(patternsMap[p.getPattern()].getScore() - 1, patternsMap[p.getPattern()].getAverageScore() - (patternsMap[p.getPattern()].getAverageScore() / 10)));
+                patternsMap[p.getPattern()].setScore(std::max(patternsMap[p.getPattern()].getScore() - 1, patternsMap[p.getPattern()].getAverageScore() - 100));
         }
     }
     std::ofstream newFile(PATTERNS_FILE);
     if (newFile.is_open()) {
         for (std::pair<const std::string, Pattern> & p : patternsMap) {
-            newFile << p.second.getPattern() << ";" << p.second.getScore() << ";" << p.second.getAverageScore() << std::endl;
+            if (p.second.getPattern() != "")
+                newFile << p.second.getPattern() << ";" << p.second.getScore() << ";" << p.second.getAverageScore() << std::endl;
         }
     }
     newFile.close();
