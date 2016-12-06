@@ -1,4 +1,3 @@
-#include <iostream>
 #include "MinMax.hh"
 
 coords		MinMax::getNextMove()
@@ -19,12 +18,42 @@ coords		MinMax::getNextMove()
 
   srand(time(NULL));
   int val = -1;
-  val = MinMax::alphaBeta(board, coord, 4, false);
-  std::cout << val << std::endl;
+
+
+  for (int i = 0, length = coord.size(); i < length; ++i)
+    {
+      int childValue = 0;
+      std::vector<coords> newCoords;
+      unsigned long long newBoard[Y_SIZE * X_SIZE];
+
+      for (int n = 0, boardLength = Y_SIZE * X_SIZE; n < boardLength; ++n)
+	newBoard[n] = board[n];
+
+      for (int n = 0; n < length; ++n)
+	{
+	  int y = coord[n].y;
+	  int x = coord[n].x;
+
+	  if (n != i)
+	    newCoords.push_back(coord.at(n));
+	  else
+	    newBoard[COORD(x, y)] = 2;		//ajouter une pierre noire a ces coordonnees
+	}
+      coord.at(i).value = MinMax::alphaBeta(board, coord, 4, false);
+    }
+
+  std::sort(coord.begin(), coord.end(),
+	    [](const coords &first, const coords &second) -> bool
+	    {
+	      return first.value > second.value;
+	    });
+
+  for (int i = 0, length = coord.size(); i < length; ++i)
+    std::cout << coord.at(i).value << std::endl;
 }
 
-int		MinMax::alphaBeta(unsigned long long* board, std::vector<coords> const &coordinates, short depth,
-				  bool maximisingPlayer)
+int		MinMax::alphaBeta(unsigned long long* board, std::vector<coords> const &coordinates,
+				  short depth, bool maximisingPlayer)
 {
   int		bestValue = 0;
 

@@ -1,11 +1,13 @@
 #ifndef MINMAX_HH_
 # define MINMAX_HH_
 
+#include <iostream>
 # include <vector>
 # include <stdio.h>      /* printf, scanf, puts, NULL */
 # include <stdlib.h>     /* srand, rand */
 # include <time.h>       /* time */
 # include <math.h>
+# include <algorithm>
 
 # define X_SIZE 2
 # define Y_SIZE 2
@@ -16,7 +18,9 @@ typedef struct	coords
 {
   int		y;
   int		x;
+  int		value;
 }		coords;
+
 
 class MinMax
 {
