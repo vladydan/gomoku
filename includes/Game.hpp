@@ -1,11 +1,16 @@
 #pragma once
 
+#include <map>
 #include <iostream>
+#include <algorithm>
 #include <list>
+#include <cmath>
+#include "Pattern.hpp"
 #include "Player.hpp"
 
 #define X_SIZE 19
 #define Y_SIZE 19
+#define TABLESIZE 361
 
 #define COORD(x, y)	(y * Y_SIZE + x)
 
@@ -95,14 +100,17 @@ class Game
   Player	*_winner;
   SFMLCanvas    *_sfml;
 
-  static void		changeAlignsAround(unsigned long long *board, int const&, int const&, unsigned long long const&, int const&, int const&, aroundCases const&);
-  static void		changeFiveRow(unsigned long long *board, int const&, int const&);
-  static void		checkBreakable(unsigned long long *board, int const&, int const&);
-  static bool		checkCase(int const&, int const&);
-  static void		deleteCase(unsigned long long *board, int const&, int const&, SFMLCanvas *sfml);
-  static bool		checkBreakableFive(unsigned long long *board, int const&, int const&);
-  static std::list<freeThree>	getfreeThreeList(unsigned long long *board, int const&, int const&);
-  static bool		checkdoubleInList(std::list<freeThree>&);
+    static void		changeAlignsAround(unsigned long long *board, int const&, int const&, unsigned long long const&, int const&, int const&, aroundCases const&);
+    static void		changeFiveRow(unsigned long long *board, int const&, int const&);
+    static void		checkBreakable(unsigned long long *board, int const&, int const&);
+    static bool		checkCase(int const&, int const&);
+    static void		deleteCase(unsigned long long *board, int const&, int const&, SFMLCanvas *sfml);
+    static bool		checkBreakableFive(unsigned long long *board, int const&, int const&);
+    static std::list<freeThree>	getfreeThreeList(unsigned long long *board, int const&, int const&);
+    static bool		checkdoubleInList(std::list<freeThree>&);
+    static int      getPatternScore(std::string const &, bool TwoD);
+    static std::list<Pattern> find2DPatterns(std::list<Pattern> &patterns);
+    static int      getScore(unsigned long long *board, int color);
 public:
     explicit Game(Player*, Player*, bool, bool, SFMLCanvas *sfml);
     virtual ~Game() {}
@@ -114,6 +122,9 @@ public:
     static void		affectBreakable(unsigned long long *board, int const&, int const&, Player*, int, SFMLCanvas *sfml);
     static bool		checkEnd(unsigned long long *board, bool bF);
     static bool		checkdoubleThree(unsigned long long *board, int const&, int const&, unsigned long long const&);
+    static void     initPatternsMap();
+    static std::list<Pattern> findPatterns(unsigned long long *board, int color);
+    static int      getTotalScore(unsigned long long *board, int color);
     void    setBreakableFive(bool);
     void    setDoubleThreeFree(bool);
     int     getTurn() const;

@@ -1,4 +1,7 @@
 #include <cstring>
+#include <fstream>
+#include <tgmath.h>
+#include "Pattern.hpp"
 #include "Game.hpp"
 #include "SFMLCanvas.hh"
 
@@ -14,6 +17,8 @@ aroundCases	around[] =
     {0, 0, 0, 0, 0, 0, 0, 0}
   };
 
+std::map<const std::string, Pattern> patternsMap;
+
 Game::Game(Player *one, Player *two, bool bF, bool dTF, SFMLCanvas *sfml)
 {
   memset(_board, 0, sizeof(_board));
@@ -25,6 +30,177 @@ Game::Game(Player *one, Player *two, bool bF, bool dTF, SFMLCanvas *sfml)
   _doubleThreeFree = dTF;
   _winner = NULL;
   _sfml = sfml;
+}
+
+void    Game::initPatternsMap() {
+    std::ifstream file("patterns");
+    std::string pat;
+    std::string score;
+
+    while (file.good()) {
+        std::getline(file, pat, ';');
+        std::getline(file, score);
+        Pattern newPat;
+        newPat.setPattern(pat);
+        newPat.setScore(std::stoi(score));
+        patternsMap.insert(std::pair<std::string, Pattern>(pat, newPat));
+    }
+    file.close();
+}
+
+int         Game::getScore(unsigned long long *board, int color) {
+    std::list<Pattern> patterns = findPatterns(board, color);
+    int score = 0;
+
+    for (std::list<Pattern>::iterator it = patterns.begin() ; it != patterns.end() ; it++) {
+        score += it->getScore();
+    }
+    return (score);
+}
+
+int         Game::getTotalScore(unsigned long long *board, int color) {
+    if (color == BLACK)
+        return (getScore(board, BLACK) - getScore(board, WHITE));
+    else
+        return (getScore(board, WHITE) - getScore(board, BLACK));
+}
+
+int         Game::getPatternScore(std::string const &pat, bool TwoD)
+{
+    if (TwoD) {
+        return((int) pow(10, round(std::count(pat.begin(), pat.end(), 'x') / 2)));
+    }
+    else {
+        return ((int) pow(10, std::count(pat.begin(), pat.end(), 'x')));
+    }
+}
+
+std::list<Pattern>  Game::find2DPatterns(std::list<Pattern> &patterns) {
+    std::list<Pattern> donePat;
+    std::list<Pattern> toAdd;
+    for (std::list<Pattern>::iterator it = patterns.begin() ; it != patterns.end() ; it++) {
+        for (int i = 0 ; i < it->getPattern().size() ; i++) {
+            for (std::list<Pattern>::iterator it2 = patterns.begin() ; it2 != patterns.end() ; it2++) {
+/*                if (*it != *it2 && std::find_if(donePat.begin(), donePat.end(), [&] (const Pattern pat){return (pat.getPattern() == it2->getPattern() &&
+                            pat.getX() == it2->getX() &&
+                            pat.getY() == it2->getY());}) != donePat.end()) {*/
+                if (*it != *it2 && std::find(donePat.begin(), donePat.end(), *it2) == donePat.end()) {
+                    for (int j = 0 ; j < it2->getPattern().size() ; j++) {
+                        int x1 = it->getX() + (i * around[it->getDirection()].x);
+                        int y1 = it->getY() + (i * around[it->getDirection()].y);
+                        int x2 = it2->getX() + (j * around[it2->getDirection()].x);
+                        int y2 = it2->getY() + (j * around[it2->getDirection()].y);
+                        if (x1 == x2 && y1 == y2) {
+                            Pattern newPat;
+                            newPat.setPattern(it->getPattern() + std::to_string(i) + std::to_string(j) + it2->getPattern());
+                            newPat.setScore(getPatternScore(newPat.getPattern(), true));
+                            newPat.setX(it->getX());
+                            newPat.setY(it->getY());
+                            if (patternsMap.find(newPat.getPattern()) != patternsMap.end()) {
+                                newPat.setScore(patternsMap[newPat.getPattern()].getScore());
+                            }
+                            toAdd.push_back(newPat);
+                        }
+                    }
+                }
+            }
+        }
+        donePat.push_back(*it);
+    }
+    for (std::list<Pattern>::iterator it = toAdd.begin() ; it != toAdd.end() ; it++)
+        patterns.push_back(*it);
+    return (patterns);
+}
+
+std::list<Pattern> Game::findPatterns(unsigned long long *board, int color) {
+    int x;
+    int y;
+    std::list<Pattern> found;
+    for (int i = 0 ; i < 4 ; i++) {
+        y = 0;
+        while (y < Y_SIZE) {
+            x = 0;
+            while (x < X_SIZE) {
+                if (getValue(board, x, y, EMPTYMASK, 0) != 0 &&
+                        getValue(board, x, y, COLORMASK, 1) == color) {
+                    std::string pat = "";
+                    int x_save = x;
+                    int y_save = y;
+                    int spaces = 0;
+                    for (int j = 0; j < 5; j++) {
+                        if (checkCase(x, y)) {
+                            if (getValue(board, x, y, EMPTYMASK, 0) == 0) {
+                                pat += "-";
+                                spaces += 1;
+                            } else {
+                                if (getValue(board, x, y, COLORMASK, 1) == color) {
+                                    pat += "x";
+                                } else {
+                                    pat += "o";
+                                }
+                                spaces = 0;
+                            }
+                            x += around[i].x;
+                            y += around[i].y;
+                            if (spaces >= 3) {
+                                x = x_save;
+                                y = y_save;
+                                break;
+                            }
+                        } else {
+                            x = X_SIZE;
+                            y = Y_SIZE;
+                            break;
+                        }
+                    }
+                    Pattern newPat;
+                    if (checkCase(x_save + around[around[i].opp_off].x, y_save + around[around[i].opp_off].y)) {
+                        if (getValue(board, x_save + around[around[i].opp_off].x, y_save + around[around[i].opp_off].y, EMPTYMASK, 0) == 0) {
+                            pat.insert(0, "-");
+                            x_save = x_save + around[around[i].opp_off].x;
+                            y_save = y_save + around[around[i].opp_off].y;
+                        }
+                        else if (getValue(board, x_save + around[around[i].opp_off].x, y_save + around[around[i].opp_off].y, COLORMASK, 1) != color) {
+                            pat.insert(0, "o");
+                            x_save = x_save + around[around[i].opp_off].x;
+                            y_save = y_save + around[around[i].opp_off].y;
+                        }
+                    }
+                    if (std::count(pat.begin(), pat.end(), 'x') >= 2) {
+                        std::string reverse(pat);
+                        std::reverse(reverse.begin(), reverse.end());
+                        if (patternsMap.find(pat) != patternsMap.end()) {
+                            newPat.setPattern(pat);
+                            newPat.setScore(patternsMap[pat].getScore());
+                            newPat.setX(x_save);
+                            newPat.setY(y_save);
+                            newPat.setDirection(i);
+                        } else if (patternsMap.find(reverse) != patternsMap.end()) {
+                            newPat.setPattern(reverse);
+                            newPat.setScore(patternsMap[reverse].getScore());
+                            newPat.setX(x_save + ((int) reverse.size() - 1) * around[i].x);
+                            newPat.setY(y_save + ((int) reverse.size() - 1) * around[i].y);
+                            newPat.setDirection(around[i].opp_off);
+                        } else {
+                            newPat.setPattern(pat);
+                            newPat.setScore(getPatternScore(pat, false));
+                            newPat.setX(x_save);
+                            newPat.setY(y_save);
+                            newPat.setDirection(i);
+                        }
+                        found.push_back(newPat);
+                    }
+                    if (x_save > x)
+                        x = x_save;
+                    if (y_save > y)
+                        y = y_save;
+                }
+                x++;
+            }
+            y++;
+        }
+    }
+    return (find2DPatterns(found));
 }
 
 void    Game::setBreakableFive(bool state)
@@ -516,7 +692,12 @@ void		Game::playTerminal()
   int	x;
   int	y;
   int	color;
+    std::list<Pattern> found;
 
+    initPatternsMap();
+/*    for (std::map<std::string, Pattern>::iterator it = patternsMap.begin() ; it != patternsMap.end() ; it++) {
+        std::cout << it->first << " : " << it->second.getScore() << std::endl;
+    }*/
   while (_playing)
     {
       printBoard(_board);
@@ -539,6 +720,11 @@ void		Game::playTerminal()
 	      if (_winner == NULL)
 		_winner = _players[_turn % 2];
 	    }
+        found = findPatterns(_board, color);
+        for (std::list<Pattern>::iterator it = found.begin() ; it != found.end() ; it++) {
+            std::cout << "Pattern : " << it->getPattern() << " score : " << it->getScore() << it->getX() << " " << it->getY() << std::endl;
+        }
+        std::cout << "score : " << getTotalScore(_board, color) << std::endl;
 	}
     }
       printBoard(_board);
