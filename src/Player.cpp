@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "Player.hpp"
 
 Player::Player(int color, std::string name, Player::PlayerType type) : _color(color), _name(name), _type(type), _broke(0)
@@ -29,7 +30,11 @@ void		Player::setBroke(int const& value)
   _broke = value;
 }
 
-void		Player::getPatterns(unsigned long long board[])
-{
-  (void)board;
+const std::list<Pattern> &Player::getPatterns() const {
+  return patterns;
+}
+
+void Player::addPattern(Pattern const &pat) {
+  if (std::find_if(patterns.begin(), patterns.end(), [&] (Pattern const &p) {return p.getPattern() == pat.getPattern();}) == patterns.end())
+    patterns.push_back(pat);
 }

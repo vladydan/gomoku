@@ -33,23 +33,26 @@ Game::Game(Player *one, Player *two, bool bF, bool dTF, SFMLCanvas *sfml)
 }
 
 void    Game::initPatternsMap() {
-    std::ifstream file("patterns");
+    std::ifstream file(PATTERNS_FILE);
     std::string pat;
     std::string score;
+    std::string avScore;
 
     while (file.good()) {
         std::getline(file, pat, ';');
-        std::getline(file, score);
+        std::getline(file, score, ';');
+        std::getline(file, avScore);
         Pattern newPat;
         newPat.setPattern(pat);
         newPat.setScore(std::stoi(score));
+        newPat.setAverageScore(std::stoi(avScore));
         patternsMap.insert(std::pair<std::string, Pattern>(pat, newPat));
     }
     file.close();
 }
 
-int         Game::getScore(unsigned long long *board, int color) {
-    std::list<Pattern> patterns = findPatterns(board, color);
+int         Game::getScore(unsigned long long *board, int color, int const &broke) {
+    std::list<Pattern> patterns = findPatterns(board, color, broke);
     int score = 0;
 
     for (std::list<Pattern>::iterator it = patterns.begin() ; it != patterns.end() ; it++) {
@@ -58,15 +61,18 @@ int         Game::getScore(unsigned long long *board, int color) {
     return (score);
 }
 
-int         Game::getTotalScore(unsigned long long *board, int color) {
+int         Game::getTotalScore(unsigned long long *board, int color, int const &broke1, int const &broke2) {
     if (color == BLACK)
-        return (getScore(board, BLACK) - getScore(board, WHITE));
+        return (getScore(board, BLACK, broke1) - getScore(board, WHITE, broke2));
     else
-        return (getScore(board, WHITE) - getScore(board, BLACK));
+        return (getScore(board, WHITE, broke1) - getScore(board, BLACK, broke2));
 }
 
-int         Game::getPatternScore(std::string const &pat, bool TwoD)
+int         Game::getPatternScore(std::string const &pat, bool TwoD, int const &broke)
 {
+    if (pat == "oxx-" || pat == "-xxo") {
+        return ((int) (- pow(10, (broke / 2) + 1)));
+    }
     if (TwoD) {
         return((int) pow(10, round(std::count(pat.begin(), pat.end(), 'x') / 2)));
     }
@@ -75,7 +81,7 @@ int         Game::getPatternScore(std::string const &pat, bool TwoD)
     }
 }
 
-std::list<Pattern>  Game::find2DPatterns(std::list<Pattern> &patterns) {
+std::list<Pattern>  Game::find2DPatterns(std::list<Pattern> &patterns, int const &broke) {
     std::list<Pattern> donePat;
     std::list<Pattern> toAdd;
     for (std::list<Pattern>::iterator it = patterns.begin() ; it != patterns.end() ; it++) {
@@ -84,7 +90,8 @@ std::list<Pattern>  Game::find2DPatterns(std::list<Pattern> &patterns) {
 /*                if (*it != *it2 && std::find_if(donePat.begin(), donePat.end(), [&] (const Pattern pat){return (pat.getPattern() == it2->getPattern() &&
                             pat.getX() == it2->getX() &&
                             pat.getY() == it2->getY());}) != donePat.end()) {*/
-                if (*it != *it2 && std::find(donePat.begin(), donePat.end(), *it2) == donePat.end()) {
+                if (*it != *it2 && std::find(donePat.begin(), donePat.end(), *it2) == donePat.end() &&
+                        it2->getDirection() != it->getDirection() && it2->getDirection() != around[it->getDirection()].opp_off) {
                     for (int j = 0 ; j < it2->getPattern().size() ; j++) {
                         int x1 = it->getX() + (i * around[it->getDirection()].x);
                         int y1 = it->getY() + (i * around[it->getDirection()].y);
@@ -93,11 +100,13 @@ std::list<Pattern>  Game::find2DPatterns(std::list<Pattern> &patterns) {
                         if (x1 == x2 && y1 == y2) {
                             Pattern newPat;
                             newPat.setPattern(it->getPattern() + std::to_string(i) + std::to_string(j) + it2->getPattern());
-                            newPat.setScore(getPatternScore(newPat.getPattern(), true));
+                            newPat.setScore(getPatternScore(newPat.getPattern(), true, broke));
+                            newPat.setAverageScore(getPatternScore(newPat.getPattern(), true, broke));
                             newPat.setX(it->getX());
                             newPat.setY(it->getY());
                             if (patternsMap.find(newPat.getPattern()) != patternsMap.end()) {
                                 newPat.setScore(patternsMap[newPat.getPattern()].getScore());
+                                newPat.setAverageScore(patternsMap[newPat.getPattern()].getAverageScore());
                             }
                             toAdd.push_back(newPat);
                         }
@@ -112,7 +121,7 @@ std::list<Pattern>  Game::find2DPatterns(std::list<Pattern> &patterns) {
     return (patterns);
 }
 
-std::list<Pattern> Game::findPatterns(unsigned long long *board, int color) {
+std::list<Pattern> Game::findPatterns(unsigned long long *board, int color, int const& broke) {
     int x;
     int y;
     std::list<Pattern> found;
@@ -137,12 +146,13 @@ std::list<Pattern> Game::findPatterns(unsigned long long *board, int color) {
                                     pat += "x";
                                 } else {
                                     pat += "o";
+                                    spaces += 1;
                                 }
                                 spaces = 0;
                             }
                             x += around[i].x;
                             y += around[i].y;
-                            if (spaces >= 3) {
+                            if (spaces >= 2) {
                                 x = x_save;
                                 y = y_save;
                                 break;
@@ -150,6 +160,13 @@ std::list<Pattern> Game::findPatterns(unsigned long long *board, int color) {
                         } else {
                             x = X_SIZE;
                             y = Y_SIZE;
+                            break;
+                        }
+                        if ((pat.find("xxo") != std::string::npos && checkCase(x_save + around[around[i].opp_off].x, y_save + around[around[i].opp_off].y) &&
+                                getValue(board, x_save + around[around[i].opp_off].x, y_save + around[around[i].opp_off].y, EMPTYMASK, 0) == 0) ||
+                            pat.find("xx-") != std::string::npos && checkCase(x_save + around[around[i].opp_off].x, y_save + around[around[i].opp_off].y) &&
+                                getValue(board, x_save + around[around[i].opp_off].x, y_save + around[around[i].opp_off].y, EMPTYMASK, 0) != 0 &&
+                                getValue(board, x_save + around[around[i].opp_off].x, y_save + around[around[i].opp_off].y, COLORMASK, 1) != color) {
                             break;
                         }
                     }
@@ -172,18 +189,21 @@ std::list<Pattern> Game::findPatterns(unsigned long long *board, int color) {
                         if (patternsMap.find(pat) != patternsMap.end()) {
                             newPat.setPattern(pat);
                             newPat.setScore(patternsMap[pat].getScore());
+                            newPat.setAverageScore(patternsMap[pat].getAverageScore());
                             newPat.setX(x_save);
                             newPat.setY(y_save);
                             newPat.setDirection(i);
                         } else if (patternsMap.find(reverse) != patternsMap.end()) {
                             newPat.setPattern(reverse);
                             newPat.setScore(patternsMap[reverse].getScore());
+                            newPat.setScore(patternsMap[reverse].getAverageScore());
                             newPat.setX(x_save + ((int) reverse.size() - 1) * around[i].x);
                             newPat.setY(y_save + ((int) reverse.size() - 1) * around[i].y);
                             newPat.setDirection(around[i].opp_off);
                         } else {
                             newPat.setPattern(pat);
-                            newPat.setScore(getPatternScore(pat, false));
+                            newPat.setScore(getPatternScore(pat, false, broke));
+                            newPat.setAverageScore(getPatternScore(pat, false, broke));
                             newPat.setX(x_save);
                             newPat.setY(y_save);
                             newPat.setDirection(i);
@@ -200,7 +220,7 @@ std::list<Pattern> Game::findPatterns(unsigned long long *board, int color) {
             y++;
         }
     }
-    return (find2DPatterns(found));
+    return (find2DPatterns(found, broke));
 }
 
 void    Game::setBreakableFive(bool state)
@@ -713,20 +733,42 @@ void		Game::playTerminal()
 	  affectBreakable(_board, x, y, _players[_turn % 2], 0, NULL);
 	  changeBreakable(_board, x, y);
 	  _playing = checkEnd(_board, _breakableFive);
-	  if (_playing && _players[0]->getBroke() < 10 && _players[1]->getBroke() < 10)
+        found = findPatterns(_board, color, _players[(_turn+1) % 2]->getBroke());
+        for (std::list<Pattern>::iterator it = found.begin() ; it != found.end() ; it++) {
+            std::cout << "Pattern : " << it->getPattern() << " score : " << it->getScore() << it->getX() << " " << it->getY() << std::endl;
+            _players[_turn % 2]->addPattern(*it);
+        }
+        std::cout << "score : " << getTotalScore(_board, color, _players[(_turn+1) % 2]->getBroke(), _players[_turn % 2]->getBroke()) << std::endl;
+        if (_playing && _players[0]->getBroke() < 10 && _players[1]->getBroke() < 10)
 	    _turn++;
 	  else
 	    {
 	      if (_winner == NULL)
 		_winner = _players[_turn % 2];
 	    }
-        found = findPatterns(_board, color);
-        for (std::list<Pattern>::iterator it = found.begin() ; it != found.end() ; it++) {
-            std::cout << "Pattern : " << it->getPattern() << " score : " << it->getScore() << it->getX() << " " << it->getY() << std::endl;
-        }
-        std::cout << "score : " << getTotalScore(_board, color) << std::endl;
 	}
     }
+    for (int i = 0 ; i < 2 ; i++) {
+        for (const Pattern & p : _players[i]->getPatterns()) {
+            if (patternsMap.find(p.getPattern()) == patternsMap.end() && p.getPattern() != "oxx-" && p.getPattern() != "-xxo")
+             patternsMap.insert(std::pair<std::string, Pattern>(p.getPattern(), p));
+        }
+    }
+    for (int i = 0 ; i < 2 ; i++) {
+        for (const Pattern & p : _players[i]->getPatterns()) {
+            if (_players[i] == _winner)
+                patternsMap[p.getPattern()].setScore(std::min(patternsMap[p.getPattern()].getScore() + 3, patternsMap[p.getPattern()].getAverageScore() + (patternsMap[p.getPattern()].getAverageScore() / 10)));
+            else
+                patternsMap[p.getPattern()].setScore(std::max(patternsMap[p.getPattern()].getScore() - 1, patternsMap[p.getPattern()].getAverageScore() - (patternsMap[p.getPattern()].getAverageScore() / 10)));
+        }
+    }
+    std::ofstream newFile(PATTERNS_FILE);
+    if (newFile.is_open()) {
+        for (std::pair<const std::string, Pattern> & p : patternsMap) {
+            newFile << p.second.getPattern() << ";" << p.second.getScore() << ";" << p.second.getAverageScore() << std::endl;
+        }
+    }
+    newFile.close();
       printBoard(_board);
       std::cout << "Player : " << _winner->getName() << " wins!" << std::endl;
 }
