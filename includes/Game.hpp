@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <list>
 #include <cmath>
+#include "MinMax.hh"
 #include "Pattern.hpp"
 #include "Player.hpp"
 

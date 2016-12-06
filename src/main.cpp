@@ -6,7 +6,7 @@ int main(int argc, char *argv[])
   if (argc > 1)
     {
       Player	one(BLACK, "Bob", Player::PLAYER);
-      Player	two(WHITE, "Baba", Player::PLAYER);
+      Player	two(WHITE, "Baba", Player::IA);
       Game	game(&one, &two, true, true, NULL);
       game.playTerminal();
       return (0);

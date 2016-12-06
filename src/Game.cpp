@@ -722,8 +722,21 @@ void		Game::playTerminal()
     {
       printBoard(_board);
       color = _players[_turn % 2]->getColor();
-      std::cin >> x;
-      std::cin >> y;
+        if (_players[_turn % 2]->getType() == Player::IA) {
+            std::vector<coords> Coords = MinMax::getNextMove(_board, *(_players[_turn % 2]), *(_players[(_turn + 1) % 2]));
+            for (coords c : Coords) {
+                std::cout << "x: " << c.x << " y: " << c.y << std::endl;
+                if (!_doubleThreeFree || !checkdoubleThree(_board, c.x, c.y, color)) {
+                    x = c.x;
+                    y = c.y;
+                    break;
+                }
+            }
+        }
+        else {
+            std::cin >> x;
+            std::cin >> y;
+        }
       if ((_board[COORD(x, y)] & EMPTYMASK) == 0 && (!_doubleThreeFree || !checkdoubleThree(_board, x, y, color)))
 	{
 	  changeValue(_board, x, y, COLORMASK, 1, color);
