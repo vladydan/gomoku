@@ -13,6 +13,12 @@ class Pattern {
     int         direction;
     int         x;
     int         y;
+    int         averageScore;
+public:
+    int getAverageScore() const;
+
+    void setAverageScore(int averageScore);
+
 public:
     bool operator==(const Pattern &rhs) const;
 

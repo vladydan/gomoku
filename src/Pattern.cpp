@@ -55,3 +55,11 @@ bool Pattern::operator==(const Pattern &rhs) const {
 bool Pattern::operator!=(const Pattern &rhs) const {
     return !(rhs == *this);
 }
+
+int Pattern::getAverageScore() const {
+    return averageScore;
+}
+
+void Pattern::setAverageScore(int averageScore) {
+    Pattern::averageScore = averageScore;
+}

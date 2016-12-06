@@ -10,6 +10,7 @@
 
 #define X_SIZE 19
 #define Y_SIZE 19
+#define PATTERNS_FILE "patterns"
 #define TABLESIZE 361
 
 #define COORD(x, y)	(y * Y_SIZE + x)
@@ -108,9 +109,9 @@ class Game
     static bool		checkBreakableFive(unsigned long long *board, int const&, int const&);
     static std::list<freeThree>	getfreeThreeList(unsigned long long *board, int const&, int const&);
     static bool		checkdoubleInList(std::list<freeThree>&);
-    static int      getPatternScore(std::string const &, bool TwoD);
-    static std::list<Pattern> find2DPatterns(std::list<Pattern> &patterns);
-    static int      getScore(unsigned long long *board, int color);
+    static int      getPatternScore(std::string const &, bool TwoD, int const &broke);
+    static std::list<Pattern> find2DPatterns(std::list<Pattern> &patterns, int const &broke);
+    static int      getScore(unsigned long long *board, int color, int const &broke);
 public:
     explicit Game(Player*, Player*, bool, bool, SFMLCanvas *sfml);
     virtual ~Game() {}
@@ -123,8 +124,8 @@ public:
     static bool		checkEnd(unsigned long long *board, bool bF);
     static bool		checkdoubleThree(unsigned long long *board, int const&, int const&, unsigned long long const&);
     static void     initPatternsMap();
-    static std::list<Pattern> findPatterns(unsigned long long *board, int color);
-    static int      getTotalScore(unsigned long long *board, int color);
+    static std::list<Pattern> findPatterns(unsigned long long *board, int color,int const& broke);
+    static int      getTotalScore(unsigned long long *board, int color, int const &broke1, int const &broke2);
     void    setBreakableFive(bool);
     void    setDoubleThreeFree(bool);
     int     getTurn() const;
