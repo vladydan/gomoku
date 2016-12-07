@@ -24,7 +24,7 @@ class MinMax
 public:
   static std::vector<coords>		getNextMove(unsigned long long *board, Player playing, Player opponent);
   static int		alphaBeta(unsigned long long *board, std::vector<coords> const &coordinates, short depth,
-				  bool maximisingPlayer, Player playing, Player opponent);
+				  bool maximisingPlayer, Player playing, Player opponent, int alpha, int beta);
 };
 
 #endif /* !MINMAX_HH_ */

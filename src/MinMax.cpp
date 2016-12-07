@@ -40,7 +40,7 @@ std::vector<coords>		MinMax::getNextMove(unsigned long long *board, Player playi
         Game::changeAligns(newBoard, x, y);
         Game::affectBreakable(newBoard, x, y, &playing, 0, NULL);
         Game::changeBreakable(newBoard, x, y);//ajouter une pierre noire a ces coordonnees
-        coord.at(i).value = MinMax::alphaBeta(newBoard, newCoords, 3, true, playing, opponent);
+        coord.at(i).value = MinMax::alphaBeta(newBoard, newCoords, 3, true, playing, opponent, 0, 0);
     }
 
     std::sort(coord.begin(), coord.end(),
@@ -54,7 +54,8 @@ std::vector<coords>		MinMax::getNextMove(unsigned long long *board, Player playi
 }
 
 int		MinMax::alphaBeta(unsigned long long* board, std::vector<coords> const &coordinates,
-				  short depth, bool maximisingPlayer, Player playing, Player opponent) {
+				  short depth, bool maximisingPlayer, Player playing, Player opponent,
+				  int alpha, int beta) {
     int bestValue = 0;
 
     if (!Game::checkEnd(board, false) || playing.getBroke() >= 10 || opponent.getBroke() >= 10) {
@@ -73,6 +74,11 @@ int		MinMax::alphaBeta(unsigned long long* board, std::vector<coords> const &coo
         bestValue = Game::getTotalScore(board, playing.getColor(), opponent.getBroke(), playing.getBroke());
         return (bestValue);
     }
+
+    if (maximisingPlayer)
+      bestValue = alpha;
+    else
+      bestValue = beta;
 
     for (int i = 0, length = coordinates.size(); i < length; ++i) {
         int childValue = 0;
@@ -106,17 +112,23 @@ int		MinMax::alphaBeta(unsigned long long* board, std::vector<coords> const &coo
         }
 
         if (maximisingPlayer) {
-            childValue = alphaBeta(newBoard, newCoords, depth - 1, false, playing, opponent);
-            if (i == 0)
+	  childValue = alphaBeta(newBoard, newCoords, depth - 1, false, playing, opponent, bestValue, beta);
+            /*if (i == 0)
                 bestValue = childValue;
             else
-                bestValue = std::max(bestValue, childValue);
+	    bestValue = std::max(bestValue, childValue);*/
+	    bestValue = std::max(bestValue, childValue);
+	    if (beta <= bestValue)
+	      break;
         } else {
-            childValue = alphaBeta(newBoard, newCoords, depth - 1, true, playing, opponent);
-            if (i == 0)
+	  childValue = alphaBeta(newBoard, newCoords, depth - 1, true, playing, opponent, alpha, bestValue);
+            /*if (i == 0)
                 bestValue = childValue;
             else
-                bestValue = std::min(bestValue, childValue);
+	    bestValue = std::min(bestValue, childValue);*/
+	    bestValue = std::min(bestValue, childValue);
+	    if (bestValue <= alpha)
+	      break;
         }
     }
     return (bestValue);
