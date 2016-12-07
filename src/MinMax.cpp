@@ -40,7 +40,7 @@ std::vector<coords>		MinMax::getNextMove(unsigned long long *board, Player playi
         Game::changeAligns(newBoard, x, y);
         Game::affectBreakable(newBoard, x, y, &playing, 0, NULL);
         Game::changeBreakable(newBoard, x, y);//ajouter une pierre noire a ces coordonnees
-        coord.at(i).value = MinMax::alphaBeta(newBoard, newCoords, 3, true, playing, opponent, 2147483647, -2147483648);
+        coord.at(i).value = MinMax::alphaBeta(newBoard, newCoords, 3, true, playing, opponent, -2147483648, 2147483647);
     }
 
     std::sort(coord.begin(), coord.end(),
