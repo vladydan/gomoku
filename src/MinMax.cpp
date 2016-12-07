@@ -1,3 +1,4 @@
+#include <omp.h>
 #include "MinMax.hh"
 
 std::vector<coords>		MinMax::getNextMove(unsigned long long *board, Player playing, Player opponent) {
@@ -21,16 +22,17 @@ std::vector<coords>		MinMax::getNextMove(unsigned long long *board, Player playi
         return (coord);
     }
 
-    for (int i = 0, length = coord.size(); i < length; ++i) {
+    #pragma omp parallel for
+    for (int i = 0; i < coord.size(); ++i) {
         std::vector<coords> newCoords;
-        unsigned long long newBoard[Y_SIZE * X_SIZE];
+        unsigned long long newBoard[TABLESIZE];
 
-        for (int n = 0, boardLength = Y_SIZE * X_SIZE; n < boardLength; ++n)
+        for (int n = 0; n < TABLESIZE; ++n)
             newBoard[n] = board[n];
 
         int y = coord[i].y;
         int x = coord[i].x;
-        for (int n = 0; n < length; ++n) {
+        for (int n = 0; n < coord.size(); ++n) {
             if (n != i)
                 newCoords.push_back(coord.at(n));
         }
@@ -45,6 +47,9 @@ std::vector<coords>		MinMax::getNextMove(unsigned long long *board, Player playi
 
     std::sort(coord.begin(), coord.end(),
               [](const coords &first, const coords &second) -> bool {
+                  if (first.value == second.value) {
+                      return ((std::rand()%2) == 0);
+                  }
                   return first.value > second.value;
               });
 
@@ -60,14 +65,14 @@ int		MinMax::alphaBeta(unsigned long long* board, std::vector<coords> const &coo
 
     if (!Game::checkEnd(board, false) || playing.getBroke() >= 10 || opponent.getBroke() >= 10) {
         if (playing.getBroke() >= 10) {
-            return (1000000);
+            return (10000000);
         } else if (opponent.getBroke() >= 10) {
-            return (-1000000);
+            return (-10000000);
         }
         if (maximisingPlayer) {
-            return (1000000);
+            return (10000000);
         } else {
-            return (-1000000);
+            return (-10000000);
         }
     }
     if (depth == 0) {
@@ -80,17 +85,17 @@ int		MinMax::alphaBeta(unsigned long long* board, std::vector<coords> const &coo
     else
       bestValue = beta;
 
-    for (int i = 0, length = coordinates.size(); i < length; ++i) {
+    for (int i = 0; i < coordinates.size(); ++i) {
         int childValue = 0;
         std::vector<coords> newCoords;
-        unsigned long long newBoard[Y_SIZE * X_SIZE];
+        unsigned long long newBoard[TABLESIZE];
 
-        for (int n = 0, boardLength = Y_SIZE * X_SIZE; n < boardLength; ++n)
+        for (int n = 0; n < TABLESIZE; ++n)
             newBoard[n] = board[n];
 
         int y = coordinates[i].y;
         int x = coordinates[i].x;
-        for (int n = 0; n < length; ++n) {
+        for (int n = 0; n < coordinates.size(); ++n) {
             if (n != i)
                 newCoords.push_back(coordinates.at(n));
         }
@@ -112,23 +117,27 @@ int		MinMax::alphaBeta(unsigned long long* board, std::vector<coords> const &coo
         }
 
         if (maximisingPlayer) {
-	  childValue = alphaBeta(newBoard, newCoords, depth - 1, false, playing, opponent, bestValue, beta);
+            childValue = alphaBeta(newBoard, newCoords, depth - 1, false, playing, opponent, bestValue, beta);
             /*if (i == 0)
                 bestValue = childValue;
             else
 	    bestValue = std::max(bestValue, childValue);*/
-	    bestValue = std::max(bestValue, childValue);
-	    if (beta <= bestValue)
-	      break;
+            if (childValue < -5000000)
+                return (10000000);
+            bestValue = std::max(bestValue, childValue);
+            if (beta <= bestValue)
+                return (bestValue);
         } else {
-	  childValue = alphaBeta(newBoard, newCoords, depth - 1, true, playing, opponent, alpha, bestValue);
+            childValue = alphaBeta(newBoard, newCoords, depth - 1, true, playing, opponent, alpha, bestValue);
             /*if (i == 0)
                 bestValue = childValue;
             else
 	    bestValue = std::min(bestValue, childValue);*/
-	    bestValue = std::min(bestValue, childValue);
-	    if (bestValue <= alpha)
-	      break;
+            if (childValue > 5000000)
+                return (-10000000);
+            bestValue = std::min(bestValue, childValue);
+            if (bestValue <= alpha)
+                return (bestValue);
         }
     }
     return (bestValue);

@@ -5,6 +5,7 @@
 # include <vector>
 # include <cmath>
 # include <algorithm>
+#include <cstdlib>
 
 #include "Player.hpp"
 #include "Game.hpp"

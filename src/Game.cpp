@@ -52,6 +52,8 @@ void    Game::initPatternsMap() {
 }
 
 int         Game::getScore(unsigned long long *board, int color, int const &broke) {
+    if (!checkEnd(board, false))
+        return (10000000);
     std::list<Pattern> patterns = findPatterns(board, color, broke);
     int score = 0;
 
@@ -62,6 +64,10 @@ int         Game::getScore(unsigned long long *board, int color, int const &brok
 }
 
 int         Game::getTotalScore(unsigned long long *board, int color, int const &broke1, int const &broke2) {
+    if (broke2 >= 10)
+        return (-10000000);
+    if (broke1 >= 10)
+        return (10000000);
     if (color == BLACK)
         return (getScore(board, BLACK, broke1) - getScore(board, WHITE, broke2));
     else
@@ -146,13 +152,13 @@ std::list<Pattern> Game::findPatterns(unsigned long long *board, int color, int 
                                     pat += "x";
                                 } else {
                                     pat += "o";
-                                    spaces += 1;
+                                    break;
                                 }
                                 spaces = 0;
                             }
                             x += around[i].x;
                             y += around[i].y;
-                            if (spaces >= 2) {
+                            if (spaces >= 3) {
                                 x = x_save;
                                 y = y_save;
                                 break;
@@ -474,14 +480,12 @@ bool	Game::checkEnd(unsigned long long *board, bool breakableFive)
 	  return;
 	}
     }*/
-  for (int y = 0; y < Y_SIZE ; ++y)
-    {
-      for (int x = 0; x < X_SIZE; ++x)
-	{
-	  if ((board[COORD(x, y)] & FIVEROW) != 0 && (!breakableFive || !checkBreakableFive(board, x, y)))
-	    return (false);
-	}
-    }
+  for (int y = 0; y < Y_SIZE ; ++y) {
+      for (int x = 0; x < X_SIZE; ++x) {
+          if ((board[COORD(x, y)] & FIVEROW) != 0 && (!breakableFive || !checkBreakableFive(board, x, y)))
+              return (false);
+      }
+  }
 	return (true);
 }
 
