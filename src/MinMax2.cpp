@@ -25,12 +25,11 @@ std::vector<coords>		MinMax::getNextMove(unsigned long long *board, Player playi
     }
 
     #pragma omp parallel for
-    for (auto it = coord.begin(), auto end = coord.end(); it != end; ++it)
-      {
-	coords *c = (*it);
-	int	x = c->x;
-	int	y = c->y;
-	coordinates.erase(it);
+    for (auto it = coord.begin() ; it != coord.end() ; ++it) {
+        coords *c = (*it);
+        int x = c->x;
+        int y = c->y;
+        coordinates.erase(it);
 
         Game::changeValue(board, x, y, EMPTYMASK, 0, 1);
         Game::changeValue(board, x, y, COLORMASK, 1, playing.getColor());
@@ -39,7 +38,7 @@ std::vector<coords>		MinMax::getNextMove(unsigned long long *board, Player playi
         Game::affectBreakable(board, x, y, &playing, 0, NULL);
         Game::changeBreakable(board, x, y);
 
-	c.at(i)->value = MinMax::alphaBeta(board, coord, 3, false, playing, opponent, -2147483648, 2147483647);
+        c.at(i)->value = MinMax::alphaBeta(board, coord, 3, false, playing, opponent, -2147483648, 2147483647);
 
         Game::changeValue(board, x, y, EMPTYMASK, 0, 0); /* /!\ A verifier /!\ */
         Game::changeValue(board, x, y, COLORMASK, 1, 0); /* /!\ A verifier /!\ */
@@ -48,8 +47,8 @@ std::vector<coords>		MinMax::getNextMove(unsigned long long *board, Player playi
         Game::affectBreakable(board, x, y, &playing, 0, NULL);
         Game::changeBreakable(board, x, y);
 
-	coordinates.insert(it, c);
-      }
+        coordinates.insert(it, c);
+    }
 
     std::sort(coord.begin(), coord.end(),
               [](const coords *first, const coords *second) -> bool {
@@ -91,7 +90,7 @@ int		MinMax::alphaBeta(unsigned long long* board, std::vector<coords> const &coo
     else
       bestValue = beta;
 
-    for (auto it = coord.begin(), auto end = coord.end(); it != end; ++it)
+    for (auto it = coord.begin() ; it != coord.end() ; ++it)
       {
 	coords *c = (*it);
 	int	x = c->x;
