@@ -29,8 +29,9 @@ std::vector<coords>     MinMax::algo(unsigned long long *board, Player playing, 
             newBoard[n] = board[n];
         int x = coord[i].x;
         int y = coord[i].y;
-        Game::changeValue(newBoard, x, y, EMPTYMASK, 0, 1);
-        Game::changeValue(newBoard, x, y, COLORMASK, 1, playing.getColor());
+        newBoard[COORD(x,y)] |= COLORMASKCUSTOM(playing.getColor());
+//        Game::changeValue(newBoard, x, y, EMPTYMASK, 0, 1);
+//        Game::changeValue(newBoard, x, y, COLORMASK, 1, playing.getColor());
         Game::changeAround(newBoard, x, y);
         Game::changeAligns(newBoard, x, y);
         Game::affectBreakable(newBoard, x, y, &playing, 0, NULL);
@@ -44,61 +45,6 @@ std::vector<coords>     MinMax::algo(unsigned long long *board, Player playing, 
     for (coords c : coord) {
         std::cout << c.x << " " << c.y << " " << c.value << std::endl;
     }
-    return (coord);
-}
-
-std::vector<coords>		MinMax::getNextMove(unsigned long long *board, Player playing, Player opponent) {
-    std::vector<coords> coord;
-    coord.clear();
-    for (int y = 0; y < Y_SIZE; y++) {
-        for (int x = 0; x < X_SIZE; x++) {
-            if (Game::getValue(board, x, y, EMPTYMASK, 0) == 0 &&
-                Game::getValue(board, x, y, ZONE, ZONEDEC) == 1) {
-                coords c;
-                c.y = y;
-                c.x = x;
-                coord.push_back(c);
-            }
-        }
-    }
-    if (coord.size() == 0) {
-        coords c;
-        c.x = 10;
-        c.y = 10;
-        coord.push_back(c);
-        return (coord);
-    }
-
-    for (int i = 0, length = coord.size(); i < length; ++i)
-        std::cout << coord.at(i).x << " " << coord.at(i).y << " " << coord.at(i).value << std::endl;
-    #pragma omp parallel for
-    for (int i = 0; i < coord.size(); ++i) {
-        std::vector<coords> newCoords;
-        unsigned long long newBoard[TABLESIZE];
-
-        for (int n = 0; n < TABLESIZE; ++n)
-            newBoard[n] = board[n];
-
-        int y = coord[i].y;
-        int x = coord[i].x;
-        for (int n = 0; n < coord.size(); ++n) {
-            if (n != i)
-                newCoords.push_back(coord.at(n));
-        }
-        Game::changeValue(newBoard, x, y, EMPTYMASK, 0, 1);
-        Game::changeValue(newBoard, x, y, COLORMASK, 1, playing.getColor());
-        Game::changeAround(newBoard, x, y);
-        Game::changeAligns(newBoard, x, y);
-        Game::affectBreakable(newBoard, x, y, &playing, 0, NULL);
-        Game::changeBreakable(newBoard, x, y);//ajouter une pierre noire a ces coordonnees
-        coord[i].value = MinMax::alphaBeta(newBoard, DEPTH, true, playing, opponent, -2147483648, 2147483647,
-                                           false);
-    }
-
-    std::sort(coord.begin(), coord.end(),
-              [](const coords &first, const coords &second) -> bool {
-                  return first.value > second.value;
-              });
     return (coord);
 }
 
@@ -155,6 +101,7 @@ int		MinMax::alphaBeta(unsigned long long* board, short depth, bool maximisingPl
                 int y = newCoordinates[i].y;
                 int x = newCoordinates[i].x;
                 if (!maximisingPlayer) {
+//                    newBoard[COORD(x, y)] |= COLORMASKCUSTOM(opponent.getColor());
                     Game::changeValue(newBoard, x, y, EMPTYMASK, 0, 1);
                     Game::changeValue(newBoard, x, y, COLORMASK, 1, opponent.getColor());
                     Game::changeAround(newBoard, x, y);
@@ -162,6 +109,7 @@ int		MinMax::alphaBeta(unsigned long long* board, short depth, bool maximisingPl
                     Game::affectBreakable(newBoard, x, y, &opponent, 0, NULL);
                     Game::changeBreakable(newBoard, x, y);
                 } else {
+//                    newBoard[COORD(x,y)] |= COLORMASKCUSTOM(playing.getColor());
                     Game::changeValue(newBoard, x, y, EMPTYMASK, 0, 1);
                     Game::changeValue(newBoard, x, y, COLORMASK, 1, playing.getColor());
                     Game::changeAround(newBoard, x, y);

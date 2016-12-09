@@ -15,13 +15,19 @@
 #define TABLESIZE 361
 
 #define COORD(x, y)	(y * Y_SIZE + x)
+#define TO_X(i) (i % Y_SIZE)
+#define TO_Y(i) (i / Y_SIZE)
 
 #define BLACK 0
 #define WHITE 1
 
+#define COLORMASKCUSTOM(i) ((i << 1) + 1)
+#define OPPOSITECOLOR(i) ((i == BLACK) ? (WHITE) : (BLACK))
+
 //MASKS
 #define EMPTYMASK	1 
 #define COLORMASK	2 // 10
+#define COLOREMPTYMASK 3 // 11
 #define FIVEROW		4 // 100
 #define BREAKABLE	8 // 1000
 #define ZONE    	16 // 10000
