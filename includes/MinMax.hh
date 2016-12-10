@@ -16,7 +16,7 @@ typedef struct	coords
 {
   int		y;
   int		x;
-  int		value;
+  long long		value;
 }		coords;
 
 
@@ -24,8 +24,8 @@ class MinMax
 {
 public:
     static std::vector<coords>		algo(unsigned long long *board, Player playing, Player opponent, bool bF);
-    static int		alphaBeta(unsigned long long *board, short depth,
-    				  bool maximisingPlayer, Player playing, Player opponent, int alpha, int beta, bool bF);
+    static long long		alphaBeta(unsigned long long *board, short depth,
+    				  bool maximisingPlayer, Player playing, Player opponent, long long alpha, long long beta, bool bF);
 };
 
 #endif /* !MINMAX_HH_ */

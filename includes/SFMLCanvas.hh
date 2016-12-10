@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Player.hpp"
 #include "ASFMLCanvas.hpp"
 class GomokuWindow;
 #include <iostream>
@@ -29,13 +30,13 @@ public :
     void    updateStat(const std::string &turn, const std::string &black, const std::string &white);
     void    setIa(bool);
     void    trySetPiece(unsigned int x, unsigned int y);
+    void    drawState();
 
 private :
 
     void    OnInit();
     void    OnUpdate();
     void    handleEvent();
-    void    drawState();
     void    drawPiece(unsigned int x, unsigned int y, sf::Sprite & piece);
     void    setPiece(unsigned int x, unsigned int y, char color);
     void    drawWinner(char winner);

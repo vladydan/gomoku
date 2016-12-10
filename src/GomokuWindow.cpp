@@ -45,6 +45,7 @@ void GomokuWindow::on_pvpButton_clicked()
   playerOne = new Player(BLACK, "PlayerOne", Player::PLAYER);
   playerTwo = new Player(WHITE, "PlayerTwo", Player::PLAYER);
   currentGame = new Game(playerOne, playerTwo, true, true, this->sfmlCanvas);
+    currentGame->initPatternsMap();
   this->findChild<QMenuBar *>("menuBar")->show();
   this->stackedWidget->setCurrentIndex(2);
   this->sfmlCanvas->setGame(currentGame);
@@ -70,7 +71,12 @@ void GomokuWindow::on_actionBack_to_the_menu_triggered()
 
 void GomokuWindow::on_actionReplay_triggered()
 {
-  this->on_pvpButton_clicked();
+    if (this->currentGame->getIA()) {
+        this->on_IAButton_clicked();
+    }
+    else {
+        this->on_pvpButton_clicked();
+    }
 }
 
 void GomokuWindow::on_doubleTrois_stateChanged(int arg1)
@@ -98,9 +104,10 @@ void GomokuWindow::on_IAButton_clicked()
     this->findChild<QLabel *>("turn")->setText("Turn : 0");
     this->findChild<QLabel *>("whiteScore")->setText("White : 0");
     this->findChild<QLabel *>("blackScore")->setText("Black : 0");
-    playerOne = new Player(BLACK, "PlayerOne", Player::PLAYER);
-    playerTwo = new Player(WHITE, "PlayerTwo", Player::IA);
+    playerOne = new Player(BLACK, "PlayerOne", Player::IA);
+    playerTwo = new Player(WHITE, "PlayerTwo", Player::PLAYER);
     currentGame = new Game(playerOne, playerTwo, true, true, this->sfmlCanvas);
+    currentGame->initPatternsMap();
     this->findChild<QMenuBar *>("menuBar")->show();
     this->stackedWidget->setCurrentIndex(2);
     this->sfmlCanvas->setGame(currentGame);

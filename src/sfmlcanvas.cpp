@@ -8,6 +8,7 @@
 #include <QDialogButtonBox>
 #include <QAction>
 #include <thread>
+#include <zconf.h>
 
 void SFMLCanvas::setGame(Game *game)
 {
@@ -70,7 +71,7 @@ void    SFMLCanvas::handleEvent()
 {
     static bool wasPressed = false;
 
-   if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && !wasPressed)
+   if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && !wasPressed && currentGame->getCurrentPlayerType() != Player::IA)
    {
         sf::Vector2i mousePos = sf::Mouse::getPosition(*this);
         sf::Vector2f screenPos = RenderWindow::mapPixelToCoords(mousePos);
@@ -112,8 +113,10 @@ void    SFMLCanvas::drawState()
         }
     }
     this->drawTips();
-    if (winner != -1)
+    if (winner != -1) {
+        this->currentGame->changePatternFile();
         drawWinner(winner);
+    }
      std::string time = "Time : " + std::to_string((int)this->myClock.getElapsedTime().asSeconds()) + " seconds";
      this->qt->findChild<QLabel *>("time")->setText(time.c_str());
 }
@@ -160,47 +163,45 @@ void    SFMLCanvas::addPiece(const std::string &color, unsigned int x, unsigned 
         this->setPiece(x, y, 'w');
 }
 
-void    SFMLCanvas::drawWinner(char winner)
-{
-     QDialog dialog(this);
-     dialog.setWindowOpacity(0.7);
-     QFormLayout form(&dialog);
-     QLabel *label;
+void    SFMLCanvas::drawWinner(char winner) {
+    QDialog dialog(this);
+    dialog.setWindowOpacity(0.7);
+    QFormLayout form(&dialog);
+    QLabel *label;
 
-     if (winner == 'w')
-       label = new QLabel("White player won ! \nDo you want to replay ? ");
-     else
-       label = new QLabel("Black player won ! \nDo you want to replay ? ");
-     form.addRow(label);
+    if (winner == 'w')
+        label = new QLabel("White player won ! \nDo you want to replay ? ");
+    else
+        label = new QLabel("Black player won ! \nDo you want to replay ? ");
+    form.addRow(label);
 
 
-     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
-                                Qt::Horizontal, &dialog);
-     form.addRow(&buttonBox);
-     QObject::connect(&buttonBox, SIGNAL(accepted()), &dialog, SLOT(accept()));
-     QObject::connect(&buttonBox, SIGNAL(rejected()), &dialog, SLOT(reject()));
+    QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
+                               Qt::Horizontal, &dialog);
+    form.addRow(&buttonBox);
+    QObject::connect(&buttonBox, SIGNAL(accepted()), &dialog, SLOT(accept()));
+    QObject::connect(&buttonBox, SIGNAL(rejected()), &dialog, SLOT(reject()));
 
-     if (dialog.exec() == QDialog::Accepted) {
-       Player *playerOne = new Player(BLACK, "PlayerOne", Player::PLAYER);
-       Player::PlayerType type = Player::PLAYER;
-       if (this->ia)
-           type = Player::IA;
-       Player *playerTwo = new Player(WHITE, "PlayerTwo", type);
-       delete this->currentGame;
-       this->currentGame = new Game(playerOne, playerTwo, true, true, this);
-       this->winner = -1;
-       for (int i = 0; i < 19; i++)
-       {
-           for (int e = 0; e < 19; e++)
-           {
-              pieces[i][e] = 0;
-           }
-       }
-       this->updateStat("Turn :0", "Black : 0", "White : 0");
-       this->myClock.restart();
-     }
-     else
-       dynamic_cast<GomokuWindow *>(this->qt)->on_actionBack_to_the_menu_triggered();
+    if (dialog.exec() == QDialog::Accepted) {
+        Player::PlayerType type = Player::PLAYER;
+        if (this->ia) {
+            type = Player::IA;
+        }
+        Player *playerOne = new Player(BLACK, "PlayerOne", type);
+        Player *playerTwo = new Player(WHITE, "PlayerTwo", Player::PlayerType::PLAYER);
+        delete this->currentGame;
+        this->currentGame = new Game(playerOne, playerTwo, true, true, this);
+        this->winner = -1;
+        this->iaPlayed = false;
+        for (int i = 0; i < 19; i++) {
+            for (int e = 0; e < 19; e++) {
+                pieces[i][e] = 0;
+            }
+        }
+        this->updateStat("Turn :0", "Black : 0", "White : 0");
+        this->myClock.restart();
+    } else
+        dynamic_cast<GomokuWindow *>(this->qt)->on_actionBack_to_the_menu_triggered();
 }
 
 void    SFMLCanvas::setWinner(const std::string &color)
@@ -214,8 +215,7 @@ void    SFMLCanvas::setWinner(const std::string &color)
 void    SFMLCanvas::trySetPiece(unsigned int x, unsigned int y)
 {
     std::string     piece;
-//    std::cin >> x;
-//    std::cin >> y;
+
     piece = currentGame->play(x,y);
     if (piece.compare("black") == 0)
         this->pieces[x][y] = 'b';

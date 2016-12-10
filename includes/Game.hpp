@@ -132,18 +132,20 @@ public:
     static void		changeAligns(unsigned long long *board, int const&, int const&);
     static void		changeBreakable(unsigned long long *board, int const&, int const&);
     static void		affectBreakable(unsigned long long *board, int const&, int const&, Player*, int, SFMLCanvas *sfml);
-    static bool		checkEnd(unsigned long long *board, bool bF);
+    static bool		checkEnd(unsigned long long *board, bool bF, int const &color);
     static bool		checkdoubleThree(unsigned long long *board, int const&, int const&, unsigned long long const&);
     static void     initPatternsMap();
     static std::vector<Pattern> findPatterns(unsigned long long *board, int const &color,int const& broke);
     static int      getTotalScore(unsigned long long *board, int const &color, int const &broke1, int const &broke2);
+    void     changePatternFile() const;
     void    setBreakableFive(bool);
     void    setDoubleThreeFree(bool);
+    bool    getIA() const;
     std::thread iaThread() {
       return std::thread(&Game::playIa, this);
     }
     Player::PlayerType getCurrentPlayerType() const;
-    std::pair<int, int> playIa();
+    void playIa();
     int     getTurn() const;
     static void	printBoard(unsigned long long *board);
     void	playTerminal();
