@@ -7,6 +7,7 @@
 #include <QFormLayout>
 #include <QDialogButtonBox>
 #include <QAction>
+#include <thread>
 
 void SFMLCanvas::setGame(Game *game)
 {
@@ -32,7 +33,7 @@ void SFMLCanvas::OnInit()
     this->blackPlayerTexture.loadFromFile("ressources/blackTurn.png");
     this->pieceText.loadFromFile("ressources/black_transp.png");
     this->whiteTransp.loadFromFile("ressources/white_transp.png");
-
+    this->ia = false;
     this->background.setTexture(this->backgroundTexture);
     this->background.scale(RenderWindow::getView().getSize() / 600.f);
     this->background.setOrigin(this->background.getScale() / 2.f);
@@ -51,12 +52,18 @@ void SFMLCanvas::OnInit()
     this->blackPlayer.setPosition(170, 0);
     this->whitePlayer.setPosition(170,0);
     this->myClock.restart();
+    this->iaPlayed = false;
 }
 
 void SFMLCanvas::OnUpdate()
 {
     this->handleEvent();
     this->drawState();
+}
+
+void    SFMLCanvas::setIa(bool ia)
+{
+    this->ia = ia;
 }
 
 void    SFMLCanvas::handleEvent()
@@ -72,9 +79,16 @@ void    SFMLCanvas::handleEvent()
         if (pionPos.x >= 0 && pionPos.x < 19 && pionPos.y >= 0 && pionPos.y < 19)
             this->trySetPiece(pionPos.x, pionPos.y);
         wasPressed = true;
+        iaPlayed = false;
    }
     if (!sf::Mouse::isButtonPressed(sf::Mouse::Left) && wasPressed)
         wasPressed = false;
+    if (currentGame->getCurrentPlayerType() == Player::IA && !iaPlayed)
+    {
+        std::thread t = currentGame->iaThread();
+        t.detach();
+        iaPlayed = true;
+    }
 }
 
 void    SFMLCanvas::drawState()
@@ -168,7 +182,10 @@ void    SFMLCanvas::drawWinner(char winner)
 
      if (dialog.exec() == QDialog::Accepted) {
        Player *playerOne = new Player(BLACK, "PlayerOne", Player::PLAYER);
-       Player *playerTwo = new Player(WHITE, "PlayerTwo", Player::PLAYER);
+       Player::PlayerType type = Player::PLAYER;
+       if (this->ia)
+           type = Player::IA;
+       Player *playerTwo = new Player(WHITE, "PlayerTwo", type);
        delete this->currentGame;
        this->currentGame = new Game(playerOne, playerTwo, true, true, this);
        this->winner = -1;

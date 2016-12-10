@@ -34,6 +34,8 @@ private slots:
 
     void on_cinqCassble_stateChanged(int arg1);
 
+    void on_IAButton_clicked();
+
 private:
     Ui::GomokuWindow *ui;
     SFMLCanvas *sfmlCanvas;

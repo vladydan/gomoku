@@ -722,6 +722,30 @@ int     Game::getTurn() const
   return this->_turn;
 }
 
+Player::PlayerType Game::getCurrentPlayerType() const
+{
+  return _players[_turn % 2]->getType();
+}
+
+std::pair<int, int> Game::playIa()
+{
+    std::pair<int, int> pair;
+    std::vector<coords> coordinates;
+    int color;
+
+    color = _players[_turn % 2]->getColor();
+    coordinates = MinMax::algo(_board, *(_players[_turn % 2]), *(_players[(_turn + 1) % 2]), _breakableFive);
+    for (coords c : coordinates) {
+        if (!_doubleThreeFree || !checkdoubleThree(_board, c.x, c.y, color)) {
+            pair.first = c.x;
+            pair.second = c.y;
+            break;
+        }
+    }
+    this->_sfml->trySetPiece(pair.first, pair.second);
+    return pair;
+}
+
 void		Game::playTerminal() {
     int x;
     int y;

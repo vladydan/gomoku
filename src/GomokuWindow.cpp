@@ -82,3 +82,27 @@ void GomokuWindow::on_cinqCassble_stateChanged(int arg1)
 {
   this->currentGame->setBreakableFive(arg1);
 }
+
+void GomokuWindow::on_IAButton_clicked()
+{
+    this->stackedWidget->setCurrentIndex(1);
+    if (sfmlCanvas != nullptr)
+    {
+      this->findChild<QFrame *>("sfmlFrame")->layout()->removeWidget(this->sfmlCanvas);
+      delete this->sfmlCanvas;
+    }
+    this->sfmlCanvas = new SFMLCanvas(this->findChild<QFrame *>("sfmlFrame"), QPoint(20, 20), QSize(360, 360), this);
+    this->sfmlCanvas->show();
+    this->findChild<QFrame *>("sfmlFrame")->layout()->addWidget(sfmlCanvas);
+    this->findChild<QLabel *>("playerTurn")->setText("Black Turn");
+    this->findChild<QLabel *>("turn")->setText("Turn : 0");
+    this->findChild<QLabel *>("whiteScore")->setText("White : 0");
+    this->findChild<QLabel *>("blackScore")->setText("Black : 0");
+    playerOne = new Player(BLACK, "PlayerOne", Player::PLAYER);
+    playerTwo = new Player(WHITE, "PlayerTwo", Player::IA);
+    currentGame = new Game(playerOne, playerTwo, true, true, this->sfmlCanvas);
+    this->findChild<QMenuBar *>("menuBar")->show();
+    this->stackedWidget->setCurrentIndex(2);
+    this->sfmlCanvas->setGame(currentGame);
+    this->sfmlCanvas->setIa(true);
+}

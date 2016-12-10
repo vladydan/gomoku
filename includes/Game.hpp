@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <list>
 #include <cmath>
+#include <utility>
+#include <thread>
 #include "MinMax.hh"
 #include "Pattern.hpp"
 #include "Player.hpp"
@@ -137,6 +139,11 @@ public:
     static int      getTotalScore(unsigned long long *board, int const &color, int const &broke1, int const &broke2);
     void    setBreakableFive(bool);
     void    setDoubleThreeFree(bool);
+    std::thread iaThread() {
+      return std::thread(&Game::playIa, this);
+    }
+    Player::PlayerType getCurrentPlayerType() const;
+    std::pair<int, int> playIa();
     int     getTurn() const;
     static void	printBoard(unsigned long long *board);
     void	playTerminal();
