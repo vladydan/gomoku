@@ -51,27 +51,23 @@ void    Game::initPatternsMap() {
     file.close();
 }
 
-int         Game::getScore(unsigned long long *board, int color, int const &broke) {
+int         Game::getScore(unsigned long long *board, int const &color, int const &broke) {
     if (!checkEnd(board, false))
         return (10000000);
-    std::list<Pattern> patterns = findPatterns(board, color, broke);
+    std::vector<Pattern> patterns = findPatterns(board, color, broke);
     int score = 0;
 
-    for (std::list<Pattern>::iterator it = patterns.begin() ; it != patterns.end() ; it++) {
+    for (std::vector<Pattern>::iterator it = patterns.begin() ; it != patterns.end() ; it++) {
         score += it->getScore();
     }
     return (score);
 }
 
-int         Game::getTotalScore(unsigned long long *board, int color, int const &broke1, int const &broke2) {
-    if (broke2 >= 10)
-        return (-10000000);
-    if (broke1 >= 10)
-        return (10000000);
+int         Game::getTotalScore(unsigned long long *board, int const &color, int const &broke1, int const &broke2) {
     if (color == BLACK)
-        return (getScore(board, BLACK, broke1) - getScore(board, WHITE, broke2));
+        return ((getScore(board, BLACK, broke1)) - (getScore(board, WHITE, broke2)));
     else
-        return (getScore(board, WHITE, broke1) - getScore(board, BLACK, broke2));
+        return ((getScore(board, WHITE, broke1)) - (getScore(board, BLACK, broke2)));
 }
 
 int         Game::getPatternScore(std::string const &pat, bool TwoD, int const &broke)
@@ -87,20 +83,24 @@ int         Game::getPatternScore(std::string const &pat, bool TwoD, int const &
     }
 }
 
-std::list<Pattern>  Game::find2DPatterns(std::list<Pattern> &patterns, int const &broke) {
-    std::list<Pattern> donePat;
-    std::list<Pattern> toAdd;
-    for (std::list<Pattern>::iterator it = patterns.begin(); it != patterns.end(); it++) {
+std::vector<Pattern>  Game::find2DPatterns(std::vector<Pattern> &patterns, int const &broke) {
+    std::vector<Pattern> donePat;
+    std::vector<Pattern> toAdd;
+    int x1;
+    int x2;
+    int y1;
+    int y2;
+    for (std::vector<Pattern>::iterator it = patterns.begin(); it != patterns.end(); it++) {
         for (int i = 0; i < it->getPattern().size(); i++) {
-            for (std::list<Pattern>::iterator it2 = patterns.begin(); it2 != patterns.end(); it2++) {
+            for (std::vector<Pattern>::iterator it2 = patterns.begin(); it2 != patterns.end(); it2++) {
                 if (*it != *it2 && std::find(donePat.begin(), donePat.end(), *it2) == donePat.end() &&
                     it2->getDirection() != it->getDirection() &&
                     it2->getDirection() != around[it->getDirection()].opp_off) {
                     for (int j = 0; j < it2->getPattern().size(); j++) {
-                        int x1 = it->getX() + (i * around[it->getDirection()].x);
-                        int y1 = it->getY() + (i * around[it->getDirection()].y);
-                        int x2 = it2->getX() + (j * around[it2->getDirection()].x);
-                        int y2 = it2->getY() + (j * around[it2->getDirection()].y);
+                        x1 = it->getX() + (i * around[it->getDirection()].x);
+                        y1 = it->getY() + (i * around[it->getDirection()].y);
+                        x2 = it2->getX() + (j * around[it2->getDirection()].x);
+                        y2 = it2->getY() + (j * around[it2->getDirection()].y);
                         if (x1 == x2 && y1 == y2) {
                             Pattern newPat;
                             newPat.setPattern(
@@ -121,29 +121,34 @@ std::list<Pattern>  Game::find2DPatterns(std::list<Pattern> &patterns, int const
         }
         donePat.push_back(*it);
     }
-    for (std::list<Pattern>::iterator it = toAdd.begin(); it != toAdd.end(); it++)
+    for (std::vector<Pattern>::iterator it = toAdd.begin(); it != toAdd.end(); it++)
         patterns.push_back(*it);
     return (patterns);
 }
 
-std::list<Pattern> Game::findPatterns(unsigned long long *board, int color, int const& broke) {
+std::vector<Pattern> Game::findPatterns(unsigned long long *board, int const &color, int const& broke) {
     int x;
     int y;
-    std::list<Pattern> found;
+    int x_save;
+    int y_save;
+    int n_save;
+    int spaces;
+    int tempX;
+    int tempY;
+    std::vector<Pattern> found;
 
     int n = 0;
     while (n < TABLESIZE) {
         x = TO_X(n);
         y = TO_Y(n);
         if ((board[COORD(x, y)] & COLOREMPTYMASK) == COLORMASKCUSTOM(color)) {
-            int n_save = n;
-            for (int i = 0 ; i < 4 ; i++) {
-                n = n_save;
+            n_save = n;
+            for (int i = 0 ; i < 4 ; ++i) {
                 std::string pat = "";
-                int x_save = x;
-                int y_save = y;
-                int spaces = 0;
-                for (int j = 0; j < 5; j++) {
+                x_save = x;
+                y_save = y;
+                spaces = 0;
+                for (int j = 0; j < 5; ++j) {
                     if (checkCase(x, y)) {
                         if ((board[COORD(x, y)] & EMPTYMASK) == 0) {
                             pat += "-";
@@ -169,40 +174,41 @@ std::list<Pattern> Game::findPatterns(unsigned long long *board, int color, int 
                         y = Y_SIZE;
                         break;
                     }
+                    tempX = x_save + around[around[i].opp_off].x;
+                    tempY = y_save + around[around[i].opp_off].y;
                     if ((pat.find("xxo") != std::string::npos &&
-                         checkCase(x_save + around[around[i].opp_off].x, y_save + around[around[i].opp_off].y) &&
-                         ((board[COORD((x_save + around[around[i].opp_off].x),
-                                       (y_save + around[around[i].opp_off].y))] & EMPTYMASK) == 0)) ||
+                         checkCase(tempX, tempY) &&
+                         ((board[COORD(tempX, tempY)] & EMPTYMASK) == 0)) ||
                         (pat.find("xx-") != std::string::npos &&
-                         checkCase(x_save + around[around[i].opp_off].x, y_save + around[around[i].opp_off].y) &&
-                         ((board[COORD((x_save + around[around[i].opp_off].x),
-                                       (y_save + around[around[i].opp_off].y))] & EMPTYMASK) == 1) &&
-                         ((board[COORD((x_save + around[around[i].opp_off].x),
-                                       (y_save + around[around[i].opp_off].y))] & COLORMASK) ==
+                         checkCase(tempX, tempY) &&
+                         ((board[COORD(tempX, tempY)] & EMPTYMASK) == 1) &&
+                         ((board[COORD(tempX, tempY)] & COLORMASK) ==
                           OPPOSITECOLOR(color)))) {
                         break;
                     }
                 }
-                if (checkCase(x_save + around[around[i].opp_off].x, y_save + around[around[i].opp_off].y) &&
-                    ((board[COORD((x_save + around[around[i].opp_off].x), (y_save + around[around[i].opp_off].y))] &
-                      COLOREMPTYMASK) == COLORMASKCUSTOM(color))) {}
+//                std::cout << pat << " " << x_save << " " << y_save << std::endl;
+                tempX = x_save + around[around[i].opp_off].x;
+                tempY = y_save + around[around[i].opp_off].y;
+                if (checkCase(tempX, tempY) &&
+                    ((board[COORD(tempX, tempY)] &
+                      COLOREMPTYMASK) == COLORMASKCUSTOM(color))) {
+                }
                 else {
                     Pattern newPat;
-                    if (checkCase(x_save + around[around[i].opp_off].x, y_save + around[around[i].opp_off].y)) {
-                        if ((board[COORD((x_save + around[around[i].opp_off].x),
-                                         (y_save + around[around[i].opp_off].y))] & EMPTYMASK) == 0) {
+                    if (checkCase(tempX, tempY)) {
+                        if ((board[COORD(tempX, tempY)] & EMPTYMASK) == 0) {
                             pat.insert(0, "-");
-                            x_save = x_save + around[around[i].opp_off].x;
-                            y_save = y_save + around[around[i].opp_off].y;
-                        } else if ((board[COORD((x_save + around[around[i].opp_off].x),
-                                                (y_save + around[around[i].opp_off].y))] & COLOREMPTYMASK) ==
+                            x_save = tempX;
+                            y_save = tempY;
+                        } else if ((board[COORD(tempX, tempY)] & COLOREMPTYMASK) ==
                                    COLORMASKCUSTOM(OPPOSITECOLOR(color))) {
                             pat.insert(0, "o");
-                            x_save = x_save + around[around[i].opp_off].x;
-                            y_save = y_save + around[around[i].opp_off].y;
+                            x_save = tempX;
+                            y_save = tempY;
                         }
                     }
-                    if (std::count(pat.begin(), pat.end(), 'x') >= 2) {
+                    if (std::count(pat.begin(), pat.end(), 'x') >= 2 && std::count(pat.begin(), pat.end(), 'o') <= 1) {
                         std::string reverse(pat);
                         std::reverse(reverse.begin(), reverse.end());
                         if (patternsMap.find(pat) != patternsMap.end()) {
@@ -230,122 +236,18 @@ std::list<Pattern> Game::findPatterns(unsigned long long *board, int color, int 
                         found.push_back(newPat);
                     }
                 }
-                if (x_save > x)
+/*                if (x_save > x)
                     x = x_save;
                 if (y_save > y)
-                    y = y_save;
-                n = COORD(x, y);
+                    y = y_save;*/
+                x = TO_X(n_save);
+                y = TO_Y(n_save);
             }
             n = n_save;
         }
-        n++;
+        ++n;
     }
-/*    for (int i = 0; i < 4; i++) {
-        int n = 0;
-        while (n < TABLESIZE) {
-            x = TO_X(n);
-            y = TO_Y(n);
-                if ((board[COORD(x, y)] & COLOREMPTYMASK) == COLORMASKCUSTOM(color)) {
-                    std::string pat = "";
-                    int x_save = x;
-                    int y_save = y;
-                    int spaces = 0;
-                    for (int j = 0; j < 5; j++) {
-                        if (checkCase(x, y)) {
-                            if ((board[COORD(x, y)] & EMPTYMASK) == 0) {
-                                pat += "-";
-                                spaces += 1;
-                            } else {
-                                if ((board[COORD(x, y)] & COLOREMPTYMASK) == COLORMASKCUSTOM(color)) {
-                                    pat += "x";
-                                } else {
-                                    pat += "o";
-                                    break;
-                                }
-                                spaces = 0;
-                            }
-                            x += around[i].x;
-                            y += around[i].y;
-                            if (spaces >= 3) {
-                                x = x_save;
-                                y = y_save;
-                                break;
-                            }
-                        } else {
-                            x = X_SIZE;
-                            y = Y_SIZE;
-                            break;
-                        }
-                        if ((pat.find("xxo") != std::string::npos &&
-                             checkCase(x_save + around[around[i].opp_off].x, y_save + around[around[i].opp_off].y) &&
-                             ((board[COORD((x_save + around[around[i].opp_off].x),
-                                           (y_save + around[around[i].opp_off].y))] & EMPTYMASK) == 0)) ||
-                            (pat.find("xx-") != std::string::npos &&
-                             checkCase(x_save + around[around[i].opp_off].x, y_save + around[around[i].opp_off].y) &&
-                             ((board[COORD((x_save + around[around[i].opp_off].x),
-                                           (y_save + around[around[i].opp_off].y))] & EMPTYMASK) == 1) &&
-                             ((board[COORD((x_save + around[around[i].opp_off].x),
-                                     (y_save + around[around[i].opp_off].y))] & COLORMASK) ==
-                              OPPOSITECOLOR(color)))) {
-                            break;
-                        }
-                    }
-                    if (checkCase(x_save + around[around[i].opp_off].x, y_save + around[around[i].opp_off].y) &&
-                        ((board[COORD((x_save + around[around[i].opp_off].x), (y_save + around[around[i].opp_off].y))] &
-                          COLOREMPTYMASK) == COLORMASKCUSTOM(color))) {}
-                    else {
-                        Pattern newPat;
-                        if (checkCase(x_save + around[around[i].opp_off].x, y_save + around[around[i].opp_off].y)) {
-                            if ((board[COORD((x_save + around[around[i].opp_off].x),
-                                             (y_save + around[around[i].opp_off].y))] & EMPTYMASK) == 0) {
-                                pat.insert(0, "-");
-                                x_save = x_save + around[around[i].opp_off].x;
-                                y_save = y_save + around[around[i].opp_off].y;
-                            } else if ((board[COORD((x_save + around[around[i].opp_off].x),
-                                                    (y_save + around[around[i].opp_off].y))] & COLOREMPTYMASK) ==
-                                       COLORMASKCUSTOM(OPPOSITECOLOR(color))) {
-                                pat.insert(0, "o");
-                                x_save = x_save + around[around[i].opp_off].x;
-                                y_save = y_save + around[around[i].opp_off].y;
-                            }
-                        }
-                        if (std::count(pat.begin(), pat.end(), 'x') >= 2) {
-                            std::string reverse(pat);
-                            std::reverse(reverse.begin(), reverse.end());
-                            if (patternsMap.find(pat) != patternsMap.end()) {
-                                newPat.setPattern(pat);
-                                newPat.setScore(patternsMap[pat].getScore());
-                                newPat.setAverageScore(patternsMap[pat].getAverageScore());
-                                newPat.setX(x_save);
-                                newPat.setY(y_save);
-                                newPat.setDirection(i);
-                            } else if (patternsMap.find(reverse) != patternsMap.end()) {
-                                newPat.setPattern(reverse);
-                                newPat.setScore(patternsMap[reverse].getScore());
-                                newPat.setAverageScore(patternsMap[reverse].getAverageScore());
-                                newPat.setX(x_save + ((int) reverse.size() - 1) * around[i].x);
-                                newPat.setY(y_save + ((int) reverse.size() - 1) * around[i].y);
-                                newPat.setDirection(around[i].opp_off);
-                            } else {
-                                newPat.setPattern(pat);
-                                newPat.setScore(getPatternScore(pat, false, broke));
-                                newPat.setAverageScore(getPatternScore(pat, false, broke));
-                                newPat.setX(x_save);
-                                newPat.setY(y_save);
-                                newPat.setDirection(i);
-                            }
-                            found.push_back(newPat);
-                        }
-                    }
-                    if (x_save > x)
-                        x = x_save;
-                    if (y_save > y)
-                        y = y_save;
-                    n = COORD(x, y);
-                }
-            n++;
-        }
-    }*/
+    return (found);
     return (find2DPatterns(found, broke));
 }
 
@@ -375,6 +277,7 @@ void	Game::changeValue(unsigned long long *board, int const& x, int const& y, un
 void	Game::printBoard(unsigned long long *board) {
     for (int y = 0; y < Y_SIZE; ++y) {
         for (int x = 0; x < X_SIZE; ++x) {
+//            std::cout << board[COORD(x,y)] << " ";
             if ((board[COORD(x, y)] & EMPTYMASK) == 0)
                 std::cout << '.';
             else
@@ -536,7 +439,7 @@ bool	Game::checkBreakableFive(unsigned long long *board, int const& x, int const
 //        int sideOne = (int) getValue(board, x, y, around[i].mask, around[i].decal);
 //        int sideTwo = (int) getValue(board, x, y, around[i].opposite, around[i].opp_decal);
         if ((sideOne + sideTwo + 1) >= 5) {
-            int m = 0;
+            int m;
             for (m = 0; m < sideOne; m++) {
                 if (((board[COORD((x + (m + 1) * around[i].x), (y + (m + 1) * around[i].y))] & BREAKABLE) >> BREAKABLEDEC) != 0) {
 //                if (getValue(board, x + (m + 1) * (around[i].x), y + (m + 1) * (around[i].y), BREAKABLE,
@@ -545,7 +448,7 @@ bool	Game::checkBreakableFive(unsigned long long *board, int const& x, int const
                     break;
                 }
             }
-            int n = 0;
+            int n;
             for (n = 0; n < sideTwo; n++) {
                 if (((board[COORD((x + (n+1) * around[around[i].opp_off].x), (y + (n+1) * around[around[i].opp_off].y))] & BREAKABLE) >> BREAKABLEDEC) != 0) {
 //                if (getValue(board, x + (n + 1) * (around[around[i].opp_off].x),
@@ -594,14 +497,14 @@ void	Game::deleteCase(unsigned long long *board, int const& x, int const& y, SFM
     int i = 0;
     unsigned long long color = ((board[COORD(x, y)] & COLORMASK) >> 1);
 //    unsigned long long color = getValue(board, x, y, COLORMASK, 1);
-    unsigned long long ar = ((board[COORD(x, y)] & AROUND) >> AROUNDDEC);
+    unsigned long long ar = ((board[COORD(x, y)] & DOUBLEZONE) >> ZONEDEC);
 //    unsigned long long ar = getValue(board, x, y, AROUND, AROUNDDEC);
 
     changeAround(board, x, y);
     board[COORD(x, y)] = 0;
     if (sfml)
         sfml->removePiece(x, y);
-    changeValue(board, x, y, AROUND, AROUNDDEC, ar);
+    changeValue(board, x, y, DOUBLEZONE, ZONEDEC, ar);
     changeAligns(board, x, y);
     while (around[i].mask != 0) {
         if ((board[COORD((x + around[i].x), (y + around[i].y))] & COLOREMPTYMASK) == COLORMASKCUSTOM(color)) {
@@ -800,10 +703,12 @@ void	Game::changeAligns(unsigned long long *board, int const& x, int const& y) {
 void	Game::changeAround(unsigned long long *board, int const& x, int const& y) {
     int i = 0;
 
+    changeValue(board, x, y, ZONECLOSE, ZONECLOSEDEC, 1);
     changeValue(board, x, y, ZONE, ZONEDEC, 1);
     while (around[i].mask != 0) {
         if (checkCase(x + around[i].x, y + around[i].y)) {
             changeValue(board, x + around[i].x, y + around[i].y, ZONE, ZONEDEC, 1);
+            changeValue(board, x + around[i].x, y + around[i].y, ZONECLOSE, ZONECLOSEDEC, 1);
         }
         if (checkCase(x + 2 * around[i].x, y + 2 * around[i].y)) {
             changeValue(board, x + 2 * around[i].x, y + 2 * around[i].y, ZONE, ZONEDEC, 1);
@@ -821,7 +726,7 @@ void		Game::playTerminal() {
     int x;
     int y;
     int color;
-    std::list<Pattern> found;
+    std::vector<Pattern> found;
     std::vector<coords> coordinates;
 
     initPatternsMap();
@@ -842,7 +747,6 @@ void		Game::playTerminal() {
             std::cin >> y;
         }
         if ((_board[COORD(x, y)] & EMPTYMASK) == 0 && (!_doubleThreeFree || !checkdoubleThree(_board, x, y, color))) {
-//            _board[COORD(x, y)] |= COLORMASKCUSTOM(color);
             changeValue(_board, x, y, COLORMASK, 1, color);
             changeValue(_board, x, y, EMPTYMASK, 0, 1);
             changeAround(_board, x, y);
@@ -851,13 +755,11 @@ void		Game::playTerminal() {
             changeBreakable(_board, x, y);
             _playing = checkEnd(_board, _breakableFive);
             found = findPatterns(_board, color, _players[(_turn + 1) % 2]->getBroke());
-            for (std::list<Pattern>::iterator it = found.begin(); it != found.end(); it++) {
-                std::cout << "Pattern : " << it->getPattern() << " score : " << it->getScore() << it->getX() << " "
+            for (std::vector<Pattern>::iterator it = found.begin(); it != found.end(); it++) {
+                std::cout << "Pattern : " << it->getPattern() << " score : " << it->getScore() << " " << it->getX() << " "
                           << it->getY() << std::endl;
                 _players[_turn % 2]->addPattern(*it);
             }
-            std::cout << "score : " << getTotalScore(_board, color, _players[(_turn + 1) % 2]->getBroke(),
-                                                     _players[_turn % 2]->getBroke()) << std::endl;
             if (_playing && _players[0]->getBroke() < 10 && _players[1]->getBroke() < 10)
                 _turn++;
             else {
@@ -902,7 +804,6 @@ std::string	Game::play(unsigned int x, unsigned int y) {
     color = _players[_turn % 2]->getColor();
     if ((_board[COORD(x, y)] & EMPTYMASK) == 0 && (!_doubleThreeFree || !checkdoubleThree(_board, x, y, color))) {
         std::cout << x << " " << y << std::endl;
-//        _board[COORD(x, y)] |= COLORMASKCUSTOM(color);
         changeValue(_board, x, y, COLORMASK, 1, color);
         changeValue(_board, x, y, EMPTYMASK, 0, 1);
         changeAround(_board, x, y);

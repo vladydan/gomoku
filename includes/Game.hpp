@@ -21,7 +21,10 @@
 #define BLACK 0
 #define WHITE 1
 
-#define COLORMASKCUSTOM(i) ((i << 1) + 1)
+#define BLACKCASE 1
+#define WHITECASE 3
+
+#define COLORMASKCUSTOM(i) ((i == BLACK) ? (BLACKCASE) : (WHITECASE))
 #define OPPOSITECOLOR(i) ((i == BLACK) ? (WHITE) : (BLACK))
 
 //MASKS
@@ -31,6 +34,9 @@
 #define FIVEROW		4 // 100
 #define BREAKABLE	8 // 1000
 #define ZONE    	16 // 10000
+#define ZONEEMPTY   17 // 10001
+#define ZONECLOSE   32 // 100000
+#define DOUBLEZONE  48 // 110000
 #define AROUND		480 // 1 11100000
 #define UP		3584 // 1110 00000000
 #define UPRIGHT		28672 // 1110000 00000000
@@ -42,15 +48,11 @@
 #define UPLEFT		7516192768 // 1 11000000 00000000 00000000 00000000
 #define BREAKABLE_OFF	2190433320960 // 1 11111110 00000000 00000000 00000000 00000000
 
-#define FIVEANDBREAK	12 // 1100
-#define BLACKCASE	1
-#define WHITECASE	3
-
 //decal masks
 #define FIVEROWDEC	2
 #define BREAKABLEDEC	3
 #define ZONEDEC	    4
-#define AROUNDDEC	5
+#define ZONECLOSEDEC	5
 #define UPDEC		9
 #define UPRIGHTDEC	12
 #define RIGHTDEC	15
@@ -117,8 +119,8 @@ class Game
     static std::list<freeThree>	getfreeThreeList(unsigned long long *board, int const&, int const&);
     static bool		checkdoubleInList(std::list<freeThree>&);
     static int      getPatternScore(std::string const &, bool TwoD, int const &broke);
-    static std::list<Pattern> find2DPatterns(std::list<Pattern> &patterns, int const &broke);
-    static int      getScore(unsigned long long *board, int color, int const &broke);
+    static std::vector<Pattern> find2DPatterns(std::vector<Pattern> &patterns, int const &broke);
+    static int      getScore(unsigned long long *board, int const &color, int const &broke);
 public:
     explicit Game(Player*, Player*, bool, bool, SFMLCanvas *sfml);
     virtual ~Game() {}
@@ -131,8 +133,8 @@ public:
     static bool		checkEnd(unsigned long long *board, bool bF);
     static bool		checkdoubleThree(unsigned long long *board, int const&, int const&, unsigned long long const&);
     static void     initPatternsMap();
-    static std::list<Pattern> findPatterns(unsigned long long *board, int color,int const& broke);
-    static int      getTotalScore(unsigned long long *board, int color, int const &broke1, int const &broke2);
+    static std::vector<Pattern> findPatterns(unsigned long long *board, int const &color,int const& broke);
+    static int      getTotalScore(unsigned long long *board, int const &color, int const &broke1, int const &broke2);
     void    setBreakableFive(bool);
     void    setDoubleThreeFree(bool);
     int     getTurn() const;
