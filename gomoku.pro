@@ -22,6 +22,8 @@ SOURCES += \
     src/Game.cpp \
     src/main.cpp \
     src/Player.cpp \
+    src/Pattern.cpp \
+    src/MinMax.cpp \
     src/GomokuWindow.cpp \
     src/ASFMLCanvas.cpp \
     src/sfmlcanvas.cpp

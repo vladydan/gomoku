@@ -27,6 +27,8 @@ public :
     void    setWinner(const std::string &color);
     void    setCurrentPlayer(const std::string &color);
     void    updateStat(const std::string &turn, const std::string &black, const std::string &white);
+    void    setIa(bool);
+    void    trySetPiece(unsigned int x, unsigned int y);
 
 private :
 
@@ -37,7 +39,6 @@ private :
     void    drawPiece(unsigned int x, unsigned int y, sf::Sprite & piece);
     void    setPiece(unsigned int x, unsigned int y, char color);
     void    drawWinner(char winner);
-    void    trySetPiece(unsigned int x, unsigned int y);
     sf::Vector2i    screenToGamePos(sf::Vector2f &pos);
     void        drawTips();
     int         pieces[19][19];
@@ -63,6 +64,8 @@ private :
     sf::Sprite  whitePlayer;
     sf::Sprite  blackPlayer;
 
+    bool ia;
+    bool iaPlayed;
     sf::Clock   myClock;
     Game      *currentGame;
     GomokuWindow   *qt;
