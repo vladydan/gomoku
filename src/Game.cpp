@@ -174,8 +174,6 @@ std::vector<Pattern> Game::findPatterns(unsigned long long *board, int const &co
                             break;
                         }
                     } else {
-                        x = X_SIZE;
-                        y = Y_SIZE;
                         break;
                     }
                     tempX = x_save + around[around[i].opp_off].x;
@@ -191,7 +189,6 @@ std::vector<Pattern> Game::findPatterns(unsigned long long *board, int const &co
                         break;
                     }
                 }
-//                std::cout << pat << " " << x_save << " " << y_save << std::endl;
                 tempX = x_save + around[around[i].opp_off].x;
                 tempY = y_save + around[around[i].opp_off].y;
                 if (checkCase(tempX, tempY) &&
@@ -252,7 +249,7 @@ std::vector<Pattern> Game::findPatterns(unsigned long long *board, int const &co
         ++n;
     }
     return (found);
-    return (find2DPatterns(found, broke));
+//    return (find2DPatterns(found, broke));
 }
 
 void    Game::setBreakableFive(bool state)
@@ -513,10 +510,10 @@ void	Game::deleteCase(unsigned long long *board, int const& x, int const& y, SFM
     changeValue(board, x, y, DOUBLEZONE, ZONEDEC, ar);
     changeAligns(board, x, y);
     while (around[i].mask != 0) {
+        changeAligns(board, x + around[i].x, y + around[i].y);
         if ((board[COORD((x + around[i].x), (y + around[i].y))] & COLOREMPTYMASK) == COLORMASKCUSTOM(color)) {
 //        if (getValue(board, x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0 &&
 //            getValue(board, x + around[i].x, y + around[i].y, COLORMASK, 1) == color) {
-            changeAligns(board, x + around[i].x, y + around[i].y);
             changeBreakable(board, x + around[i].x, y + around[i].y);
         } else if ((board[COORD((x + around[i].x), (y + around[i].y))] & COLOREMPTYMASK) == COLORMASKCUSTOM(OPPOSITECOLOR(color))) {
 //        } else if (getValue(board, x + around[i].x, y + around[i].y, EMPTYMASK, 0) != 0) {
@@ -869,6 +866,7 @@ std::string	Game::play(unsigned int x, unsigned int y) {
                 _players[_turn % 2]->addPattern(*it);
             }
         }
+//        std::cout << "Score : " << getScore(_board, _players[_turn %2]->getColor(), _players[(_turn + 1) % 2]->getBroke()) << std::endl;
         if (_playing && _players[0]->getBroke() < 10 && _players[1]->getBroke() < 10) {
             _turn++;
             _sfml->updateStat("Turn : " + std::to_string(_turn), "Black : " + std::to_string(_players[0]->getBroke()),

@@ -49,9 +49,9 @@ std::vector<coords>     MinMax::algo(unsigned long long *board, Player playing, 
               [](const coords &first, const coords &second) -> bool {
                   return first.value > second.value;
               });
-    for (coords c : coord) {
+/*    for (coords c : coord) {
         std::cout << c.x << " " << c.y << " " << c.value << std::endl;
-    }
+    }*/
     return (coord);
 }
 
