@@ -54,12 +54,21 @@ void SFMLCanvas::OnInit()
     this->whitePlayer.setPosition(170,0);
     this->myClock.restart();
     this->iaPlayed = false;
+    this->frameAfterWin = 0;
 }
 
 void SFMLCanvas::OnUpdate()
 {
     this->handleEvent();
     this->drawState();
+    if (winner != -1 && frameAfterWin == 60) {
+      this->currentGame->changePatternFile();
+      drawWinner(winner);
+    }
+    if (winner != -1)
+    {
+      frameAfterWin += 1;
+    }
 }
 
 void    SFMLCanvas::setIa(bool ia)
@@ -86,10 +95,16 @@ void    SFMLCanvas::handleEvent()
         wasPressed = false;
     if (currentGame->getCurrentPlayerType() == Player::IA && !iaPlayed)
     {
+        this->qt->setCursor(Qt::WaitCursor);
         std::thread t = currentGame->iaThread();
         t.detach();
         iaPlayed = true;
     }
+}
+
+void SFMLCanvas::iaFinish()
+{
+  this->qt->setCursor(Qt::ArrowCursor);
 }
 
 void    SFMLCanvas::drawState()
@@ -97,12 +112,15 @@ void    SFMLCanvas::drawState()
     RenderWindow::clear(sf::Color(0, 128, 0));
     RenderWindow::draw(this->background);
 
+
     for (int i = 0; i < 19; i++)
     {
         for (int e = 0; e < 19; e++)
         {
             if (this->pieces[i][e] == 'b')
-                this->drawPiece(i,e, this->blackPiece);
+            {
+              this->drawPiece(i, e, this->blackPiece);
+            }
             else if (this->pieces[i][e] == 'w')
                 this->drawPiece(i, e, this->whitePiece);
             else if (this->pieces[i][e] < -1)
@@ -112,11 +130,8 @@ void    SFMLCanvas::drawState()
             }
         }
     }
+  if (winner == -1)
     this->drawTips();
-    if (winner != -1) {
-        this->currentGame->changePatternFile();
-        drawWinner(winner);
-    }
      std::string time = "Time : " + std::to_string((int)this->myClock.getElapsedTime().asSeconds()) + " seconds";
      this->qt->findChild<QLabel *>("time")->setText(time.c_str());
 }
@@ -200,6 +215,7 @@ void    SFMLCanvas::drawWinner(char winner) {
         }
         this->updateStat("Turn :0", "Black : 0", "White : 0");
         this->myClock.restart();
+        this->frameAfterWin = 0;
     } else
         dynamic_cast<GomokuWindow *>(this->qt)->on_actionBack_to_the_menu_triggered();
 }
@@ -218,14 +234,16 @@ void    SFMLCanvas::trySetPiece(unsigned int x, unsigned int y)
 
     piece = currentGame->play(x,y);
     if (piece.compare("black") == 0)
-        this->pieces[x][y] = 'b';
+    {
+      this->pieces[x][y] = 'b';
+    }
     else if (piece.compare("white") == 0)
         this->pieces[x][y] = 'w';
     else if (pieces[x][y] == 'b' || pieces[x][y] == 'w')
         {
         }
     else
-       this->pieces[x][y] = -700;
+      this->pieces[x][y] = -700;
 }
 
 void    SFMLCanvas::setCurrentPlayer(const std::string &color)

@@ -31,7 +31,7 @@ public :
     void    setIa(bool);
     void    trySetPiece(unsigned int x, unsigned int y);
     void    drawState();
-
+    void    iaFinish();
 private :
 
     void    OnInit();
@@ -69,5 +69,6 @@ private :
     bool iaPlayed;
     sf::Clock   myClock;
     Game      *currentGame;
+    int       frameAfterWin;
     GomokuWindow   *qt;
 };

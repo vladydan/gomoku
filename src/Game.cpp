@@ -747,6 +747,7 @@ void Game::playIa()
             break;
         }
     }
+    _sfml->iaFinish();
     _sfml->trySetPiece(x,y);
 }
 
