@@ -87,7 +87,7 @@
             <item row="1" column="0">
              <widget class="QPushButton" name="IAButton">
               <property name="text">
-               <string>Player vs IA</string>
+               <string>Player vs Dolores</string>
               </property>
              </widget>
             </item>

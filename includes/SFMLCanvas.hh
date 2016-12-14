@@ -68,6 +68,7 @@ private :
     bool ia;
     bool iaPlayed;
     sf::Clock   myClock;
+    sf::Clock   turnDuration;
     Game      *currentGame;
     int       frameAfterWin;
     GomokuWindow   *qt;

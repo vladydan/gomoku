@@ -53,6 +53,7 @@ void SFMLCanvas::OnInit()
     this->blackPlayer.setPosition(170, 0);
     this->whitePlayer.setPosition(170,0);
     this->myClock.restart();
+    this->turnDuration.restart();
     this->iaPlayed = false;
     this->frameAfterWin = 0;
 }
@@ -96,6 +97,7 @@ void    SFMLCanvas::handleEvent()
     if (currentGame->getCurrentPlayerType() == Player::IA && !iaPlayed)
     {
         this->qt->setCursor(Qt::WaitCursor);
+        this->turnDuration.restart();
         std::thread t = currentGame->iaThread();
         t.detach();
         iaPlayed = true;
@@ -105,6 +107,8 @@ void    SFMLCanvas::handleEvent()
 void SFMLCanvas::iaFinish()
 {
   this->qt->setCursor(Qt::ArrowCursor);
+  float time = (float)this->turnDuration.getElapsedTime().asMilliseconds();
+  std::cout << "Dolores played in " << time << " milliseconds" << std::endl;;
 }
 
 void    SFMLCanvas::drawState()

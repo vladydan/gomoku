@@ -11,7 +11,8 @@ TEMPLATE = app
 
 LIBS += -lsfml-audio -lsfml-graphics -lsfml-network -lsfml-window -lsfml-system
 
-QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CXXFLAGS += -std=c++11  -o3
+
 
 INCLUDEPATH += includes
 
